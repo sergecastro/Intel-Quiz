@@ -2,41 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Kids Educational Game Design System - Bright, playful, and accessible */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Main theme colors - bright and cheerful */
+    --background: 220 50% 97%;
+    --foreground: 230 25% 20%;
 
+    /* Card system - soft and welcoming */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 230 25% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 230 25% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - vibrant educational blue */
+    --primary: 215 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 215 85% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - warm encouraging orange */
+    --secondary: 35 95% 60%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Success - celebration green */
+    --success: 145 75% 50%;
+    --success-foreground: 0 0% 100%;
+    --success-glow: 145 75% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warning - gentle attention yellow */
+    --warning: 45 100% 60%;
+    --warning-foreground: 230 25% 20%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Muted - soft backgrounds */
+    --muted: 220 30% 95%;
+    --muted-foreground: 230 15% 45%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Accent - playful purple */
+    --accent: 270 70% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Error - gentle correction red */
+    --destructive: 355 75% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 220 25% 88%;
+    --input: 220 25% 88%;
+    --ring: 215 85% 55%;
+
+    /* Gradients for depth and fun */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-glow)));
+    --gradient-playful: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-warm: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--warning)));
+    --gradient-bg: linear-gradient(180deg, hsl(220 50% 97%), hsl(220 40% 94%));
+
+    /* Shadows for depth */
+    --shadow-soft: 0 4px 12px hsl(var(--primary) / 0.1);
+    --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.3);
+    --shadow-success: 0 4px 20px hsl(var(--success) / 0.2);
+
+    /* Animations */
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
