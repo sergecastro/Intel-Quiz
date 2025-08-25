@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronUp, ChevronDown } from 'lucide-react';
@@ -22,6 +23,16 @@ export const SlotMachine = ({
 }: SlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+
+  // Sync currentIndex with selectedValue
+  React.useEffect(() => {
+    if (selectedValue) {
+      const index = options.findIndex(option => option === selectedValue);
+      if (index !== -1) {
+        setCurrentIndex(index);
+      }
+    }
+  }, [selectedValue, options]);
 
   const handleSpin = () => {
     if (isSpinning) return;
@@ -114,6 +125,7 @@ export const SlotMachine = ({
           disabled={isSpinning}
           variant={selectedValue ? "secondary" : "default"}
           className="w-full transition-all duration-300 hover:scale-105"
+          data-spin-button="true"
         >
           {isSpinning ? '🎰 Spinning...' : '🎰 Spin'}
         </Button>

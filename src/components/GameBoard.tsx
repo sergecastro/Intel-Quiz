@@ -98,7 +98,18 @@ export const GameBoard = () => {
     }
   };
 
+  const spinAllSlots = () => {
+    // Trigger spin on all slot machines
+    const spinButtons = document.querySelectorAll('[data-spin-button="true"]');
+    spinButtons.forEach(button => {
+      if (button instanceof HTMLButtonElement && !button.disabled) {
+        button.click();
+      }
+    });
+  };
+
   const resetGame = () => {
+    console.log('resetGame called');
     setSelections({
       country: null,
       capital: null,
@@ -112,6 +123,7 @@ export const GameBoard = () => {
   };
 
   const resetAll = () => {
+    console.log('resetAll called');
     resetGame();
     setScore(0);
     setAttempts(0);
@@ -196,13 +208,13 @@ export const GameBoard = () => {
             </Button>
             
             <Button
-              onClick={resetGame}
+              onClick={spinAllSlots}
               variant="outline"
               size="lg"
               className="text-lg px-8 hover:scale-105 transition-all duration-300"
             >
               <RotateCcw className="h-5 w-5 mr-2" />
-              New Round
+              Spin All
             </Button>
             
             <Button
