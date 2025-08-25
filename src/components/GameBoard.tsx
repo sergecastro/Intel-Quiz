@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { SlotMachine } from './SlotMachine';
 import { FlagSlotMachine } from './FlagSlotMachine';
 import { Button } from '@/components/ui/button';
@@ -38,8 +38,15 @@ export const GameBoard = () => {
   const { toast } = useToast();
   const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
 
-  // Text-to-Speech function using Supabase edge function
+  // Enhanced Text-to-Speech function with queue to prevent overlapping
   const speakText = async (text: string) => {
+    if (isSpeaking) {
+      // Add to queue if already speaking
+      speechQueueRef.current.push(text);
+      return;
+    }
+
+    setIsSpeaking(true);
     try {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: { text }
@@ -47,6 +54,8 @@ export const GameBoard = () => {
 
       if (error) {
         console.log('Voice synthesis error:', error);
+        setIsSpeaking(false);
+        processNextSpeech();
         return;
       }
 
@@ -60,10 +69,34 @@ export const GameBoard = () => {
         const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
-        audio.play();
+        
+        audio.onended = () => {
+          setIsSpeaking(false);
+          // Process next speech in queue after a short delay
+          setTimeout(() => processNextSpeech(), 500);
+        };
+        
+        audio.onerror = () => {
+          setIsSpeaking(false);
+          processNextSpeech();
+        };
+        
+        await audio.play();
       }
     } catch (error) {
       console.log('Voice synthesis not available:', error);
+      setIsSpeaking(false);
+      processNextSpeech();
+    }
+  };
+
+  const processNextSpeech = () => {
+    if (speechQueueRef.current.length > 0) {
+      const nextText = speechQueueRef.current.shift();
+      if (nextText) {
+        // Small delay before next speech
+        setTimeout(() => speakText(nextText), 300);
+      }
     }
   };
 
@@ -72,6 +105,8 @@ export const GameBoard = () => {
   // Speech delay timer and failure tracking
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
   const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const speechQueueRef = useRef<string[]>([]);
 
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
@@ -87,10 +122,10 @@ export const GameBoard = () => {
         clearTimeout(speechTimer);
       }
       
-      // Set new timer to speak after 2 seconds pause for better detection
+      // Set new timer to speak after 3 seconds pause for better detection
       const newTimer = setTimeout(() => {
         provideFeedback(category, value, newSelections);
-      }, 2000);
+      }, 3000);
       setSpeechTimer(newTimer);
       
       return newSelections;
@@ -184,11 +219,18 @@ export const GameBoard = () => {
       setIsCorrect(true);
       setScore(prev => prev + 1);
       setConsecutiveFailures(0);  // Reset failures on success
-      playWinChime(match.country);
+      
+      // Play success sound and speak celebration
+      playSuccessSound();
       speakText(`Perfect match! ${match.country} is absolutely correct!`);
-      // Play country music celebration with multiple rounds
-      setTimeout(() => playCountryMusic(match.country), 2000);
-      setTimeout(() => playCountryMusic(match.country), 6000);
+      
+      // Play country music celebration - wait for speech to finish first
+      setTimeout(() => {
+        playCountryMusic(match.country);
+        // Play it again for celebration
+        setTimeout(() => playCountryMusic(match.country), 5000);
+      }, 4000);
+      
       toast({
         title: "🎉 INCREDIBLE MATCH! 🎉",
         description: `🌟 AMAZING! You matched ${match.country} perfectly! 🎵 Listen to their beautiful music! 🎶`,
