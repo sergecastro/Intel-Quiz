@@ -106,16 +106,18 @@ export const SlotMachine = ({
         </h3>
         
         {/* Slot Display */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleManualSelect('up')}
-            disabled={isSpinning}
-            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
-          >
-            <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
-          </Button>
+        <div className="relative space-y-2">
+          <div className="flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleManualSelect('up')}
+              disabled={isSpinning}
+              className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
+            >
+              <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
+            </Button>
+          </div>
           
           {/* MAGICAL SLOT WINDOW */}
           <div className={`
@@ -126,10 +128,10 @@ export const SlotMachine = ({
           `}>
             {/* MAGICAL INNER DISPLAY */}
             <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-3 border-yellow-400 flex items-center justify-center shadow-inner overflow-hidden">
-              <div className={`
-                text-xl font-black px-4 py-2 rounded-lg transition-all duration-300 text-center min-h-[3rem] flex items-center justify-center
+               <div className={`
+                text-xl font-black px-4 py-2 rounded-lg transition-all duration-300 text-center min-h-[3rem] flex items-center justify-center w-full
                 ${isSpinning ? 'animate-bounce-crazy text-4xl' : 'animate-pulse'}
-                ${selectedValue ? 'text-purple-900 bg-gradient-to-b from-yellow-200 to-yellow-300 shadow-lg border-2 border-purple-400' : 'text-purple-800 bg-gradient-to-b from-blue-100 to-cyan-100'}
+                ${selectedValue ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
                 {isSpinning ? '🎰✨🎲' : (
                   <span className="drop-shadow-sm font-extrabold">
@@ -140,15 +142,17 @@ export const SlotMachine = ({
             </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleManualSelect('down')}
-            disabled={isSpinning}
-            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
-          >
-            <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleManualSelect('down')}
+              disabled={isSpinning}
+              className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
+            >
+              <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
+            </Button>
+          </div>
         </div>
         
         {/* MEGA SPIN BUTTON */}
