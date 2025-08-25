@@ -40,12 +40,18 @@ export const GameBoard = () => {
   // Text-to-Speech function using ElevenLabs
   const speakText = async (text: string) => {
     try {
+      const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+      if (!apiKey) {
+        console.log('ElevenLabs API key not found. Please set VITE_ELEVENLABS_API_KEY environment variable.');
+        return;
+      }
+
       const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x', {
         method: 'POST',
         headers: {
           'Accept': 'audio/mpeg',
           'Content-Type': 'application/json',
-          'xi-api-key': process.env.ELEVENLABS_API_KEY || ''
+          'xi-api-key': apiKey
         },
         body: JSON.stringify({
           text: text,
@@ -155,10 +161,15 @@ export const GameBoard = () => {
       speakText(feedbackText);
       playErrorSound();
       
-      // After 3 failures, show correct answer
+      // After 3 failures, show educational help with dramatic audio
       if (newFailures >= 3) {
-        setShowingCorrectAnswer(true);
-        showCorrectAnswer();
+        playErrorSound(); // Dramatic failure sound
+        speakText("Oh no! Three failures! Let me teach you the correct answer with some exciting slot machine action!");
+        
+        setTimeout(() => {
+          setShowingCorrectAnswer(true);
+          showCorrectAnswer();
+        }, 2000);
       } else {
         toast({
           title: "Not quite right",
@@ -185,31 +196,65 @@ export const GameBoard = () => {
     // Pick a random correct match
     const randomMatch = gameMatches[Math.floor(Math.random() * gameMatches.length)];
     
-    speakText(`Let me show you the correct answer! Watch carefully as I demonstrate a perfect match with ${randomMatch.country}!`);
-    
-    // Show the correct selections with spinning effect
-    setTimeout(() => {
-      setSelections({
-        country: randomMatch.country,
-        capital: randomMatch.capital,
-        language: randomMatch.language,
-        currency: randomMatch.currency,
-        continent: randomMatch.continent,
-        flag: randomMatch.flag
-      });
+    // First, trigger exciting spin animations 4 times
+    let spinCount = 0;
+    const spinInterval = setInterval(() => {
+      playExcitementSound();
+      spinAllSlots();
+      spinCount++;
       
-      toast({
-        title: "📚 Learning Time! 📚",
-        description: `Here's a perfect match for ${randomMatch.country}! Study this combination and try again.`,
-        variant: "default"
-      });
-      
-      setTimeout(() => {
-        setShowingCorrectAnswer(false);
-        setConsecutiveFailures(0);
-        resetGame();
-      }, 5000);
-    }, 1000);
+      if (spinCount >= 4) {
+        clearInterval(spinInterval);
+        
+        // After 4 spins, show the correct educational answer
+        setTimeout(() => {
+          speakText(`Here's the perfect match! ${randomMatch.country} is the country!`);
+          
+          // Set selections one by one with voice feedback
+          setSelections(prev => ({ ...prev, country: randomMatch.country }));
+          
+          setTimeout(() => {
+            speakText(`${randomMatch.capital} is the capital of ${randomMatch.country}!`);
+            setSelections(prev => ({ ...prev, capital: randomMatch.capital }));
+          }, 1000);
+          
+          setTimeout(() => {
+            speakText(`${randomMatch.language} is the language of ${randomMatch.country}!`);
+            setSelections(prev => ({ ...prev, language: randomMatch.language }));
+          }, 2000);
+          
+          setTimeout(() => {
+            speakText(`${randomMatch.currency} is the currency of ${randomMatch.country}!`);
+            setSelections(prev => ({ ...prev, currency: randomMatch.currency }));
+          }, 3000);
+          
+          setTimeout(() => {
+            speakText(`${randomMatch.continent} is the continent where ${randomMatch.country} is located!`);
+            setSelections(prev => ({ ...prev, continent: randomMatch.continent }));
+          }, 4000);
+          
+          setTimeout(() => {
+            speakText(`And this is the flag of ${randomMatch.country}! Study this perfect match!`);
+            setSelections(prev => ({ ...prev, flag: randomMatch.flag }));
+            
+            toast({
+              title: "🎓 EDUCATIONAL MOMENT! 🎓",
+              description: `Perfect match for ${randomMatch.country}! Learn this combination!`,
+              variant: "default"
+            });
+          }, 5000);
+          
+          // Reset after showing the complete match
+          setTimeout(() => {
+            setShowingCorrectAnswer(false);
+            setConsecutiveFailures(0);
+            resetGame();
+            speakText("Now try again with what you've learned!");
+          }, 10000);
+          
+        }, 2000);
+      }
+    }, 1500); // Spin every 1.5 seconds
   };
 
   const resetGame = () => {
