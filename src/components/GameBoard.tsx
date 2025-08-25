@@ -69,6 +69,9 @@ export const GameBoard = () => {
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
+  // Speech delay timer
+  const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
+
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
     setSelections(prev => {
@@ -77,13 +80,55 @@ export const GameBoard = () => {
         [category]: value
       };
       console.log('New selections after update:', newSelections);
+      
+      // Clear any existing speech timer
+      if (speechTimer) {
+        clearTimeout(speechTimer);
+      }
+      
+      // Set new timer to speak after 500ms pause
+      const newTimer = setTimeout(() => {
+        provideFeedback(category, value, newSelections);
+      }, 500);
+      setSpeechTimer(newTimer);
+      
       return newSelections;
     });
     setIsMatched(false);
-    
-    // Speak the selection
-    const categoryName = categoryNames[category];
-    speakText(`${value} is the ${categoryName.toLowerCase()}`);
+  };
+
+  const provideFeedback = (category: CategoryKey, value: string, currentSelections: Selections) => {
+    // Rule 1 & 2: Don't speak until country is chosen
+    if (category !== 'country' && !currentSelections.country) {
+      return;
+    }
+
+    if (category === 'country') {
+      speakText(`${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`);
+      return;
+    }
+
+    // For other categories, check if choice is correct for selected country
+    const correctMatch = gameMatches.find(match => match.country === currentSelections.country);
+    if (!correctMatch) return;
+
+    const isCorrect = correctMatch[category] === value;
+    const nextCategoryIndex = categoryOrder.indexOf(category) + 1;
+    const nextCategory = nextCategoryIndex < categoryOrder.length ? categoryOrder[nextCategoryIndex] : null;
+
+    if (isCorrect) {
+      let message = `BRAVO! ${value.toUpperCase()} IS CORRECT FOR ${currentSelections.country?.toUpperCase()}!`;
+      if (nextCategory) {
+        const nextCategoryName = categoryNames[nextCategory];
+        message += ` NOW CHOOSE THE ${nextCategoryName.toUpperCase()}!`;
+      } else {
+        message += ` ALL DONE! CHECK YOUR MATCH!`;
+      }
+      speakText(message);
+    } else {
+      const correctValue = correctMatch[category];
+      speakText(`NO! ${correctValue?.toUpperCase()} IS THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}!`);
+    }
   };
 
   const checkMatch = () => {
