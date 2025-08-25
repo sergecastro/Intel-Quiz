@@ -8,6 +8,7 @@ import { gameMatches, categories, categoryNames, type CategoryKey } from '@/data
 import { Sparkles, RotateCcw, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useGameAudio } from '@/hooks/useGameAudio';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Selections {
   country: string | null;
@@ -37,34 +38,26 @@ export const GameBoard = () => {
   const { toast } = useToast();
   const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
 
-  // Text-to-Speech function using ElevenLabs
+  // Text-to-Speech function using Supabase edge function
   const speakText = async (text: string) => {
     try {
-      const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-      if (!apiKey) {
-        console.log('ElevenLabs API key not found. Please set VITE_ELEVENLABS_API_KEY environment variable.');
+      const { data, error } = await supabase.functions.invoke('text-to-speech', {
+        body: { text }
+      });
+
+      if (error) {
+        console.log('Voice synthesis error:', error);
         return;
       }
 
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x', {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': apiKey
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: 'eleven_turbo_v2_5',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5
-          }
-        })
-      });
-
-      if (response.ok) {
-        const audioBlob = await response.blob();
+      if (data?.audioContent) {
+        // Convert base64 to audio blob and play
+        const binaryString = atob(data.audioContent);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         audio.play();
