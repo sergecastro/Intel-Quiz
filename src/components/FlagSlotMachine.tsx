@@ -83,10 +83,20 @@ export const FlagSlotMachine = ({
   };
 
   return (
-    <Card className={`p-6 transition-all duration-300 ${getCardStyle()}`}>
-      <div className="text-center space-y-4">
+    <Card className={`relative p-3 transition-all duration-300 ${getCardStyle()} 
+      border-4 border-double overflow-hidden
+      before:absolute before:inset-0 before:bg-gradient-to-br before:from-yellow-200/20 before:to-orange-200/20 before:rounded-lg
+      shadow-lg hover:shadow-xl transform hover:scale-[1.02]`}>
+      
+      {/* Decorative corners */}
+      <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+      <div className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+      <div className="absolute bottom-1 left-1 w-3 h-3 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+      <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+      
+      <div className="relative z-10 text-center space-y-2">
         {/* Category Header */}
-        <h3 className={`text-lg font-bold transition-colors ${
+        <h3 className={`text-sm font-bold transition-colors uppercase tracking-wide ${
           isMatched 
             ? isCorrect ? 'text-success-foreground' : 'text-warning-foreground'
             : selectedValue ? 'text-primary-foreground' : 'text-foreground'
@@ -95,35 +105,44 @@ export const FlagSlotMachine = ({
         </h3>
         
         {/* Slot Display */}
-        <div className="relative h-24 flex items-center justify-center">
+        <div className="relative">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => handleManualSelect('up')}
             disabled={isSpinning}
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform"
+            className="absolute -top-1 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform z-20 h-6 w-6 p-0 bg-gradient-to-b from-pink-300 to-pink-400 hover:from-pink-400 hover:to-pink-500 rounded-full"
           >
-            <ChevronUp className="h-4 w-4" />
+            <ChevronUp className="h-3 w-3 text-white" />
           </Button>
           
+          {/* Slot Machine Window */}
           <div className={`
-            px-4 py-2 rounded-lg min-h-[3rem] flex items-center justify-center
-            transition-all duration-300
-            ${isSpinning ? 'animate-bounce-soft' : ''}
-            ${selectedValue ? 'bg-card/80 backdrop-blur-sm' : 'bg-muted'}
+            relative mx-auto w-full h-16 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg
+            border-4 border-double border-yellow-400 shadow-inner
+            flex items-center justify-center overflow-hidden
+            ${isSpinning ? 'animate-pulse' : ''}
           `}>
-            {getCurrentFlagImage() ? (
-              <div className="flex flex-col items-center gap-1">
-                <img 
-                  src={getCurrentFlagImage()} 
-                  alt={options[currentIndex]}
-                  className="h-8 w-12 object-cover rounded border shadow-sm"
-                />
-                <span className="text-sm font-medium">{options[currentIndex]}</span>
+            {/* Inner glow */}
+            <div className="absolute inset-1 bg-gradient-to-b from-blue-100 to-white rounded border border-gray-300 flex items-center justify-center">
+              <div className={`
+                flex flex-col items-center justify-center transition-all duration-300
+                ${isSpinning ? 'animate-bounce' : ''}
+              `}>
+                {getCurrentFlagImage() ? (
+                  <>
+                    <img 
+                      src={getCurrentFlagImage()} 
+                      alt={options[currentIndex]}
+                      className="h-6 w-9 object-cover rounded border shadow-sm mb-1"
+                    />
+                    <span className="text-xs font-semibold text-blue-700">{options[currentIndex]}</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-bold text-gray-700">{options[currentIndex]}</span>
+                )}
               </div>
-            ) : (
-              <span className="text-xl font-semibold">{options[currentIndex]}</span>
-            )}
+            </div>
           </div>
           
           <Button
@@ -131,9 +150,9 @@ export const FlagSlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('down')}
             disabled={isSpinning}
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform"
+            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform z-20 h-6 w-6 p-0 bg-gradient-to-b from-cyan-300 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500 rounded-full"
           >
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-3 w-3 text-white" />
           </Button>
         </div>
         
@@ -142,16 +161,16 @@ export const FlagSlotMachine = ({
           onClick={handleSpin}
           disabled={isSpinning}
           variant={selectedValue ? "secondary" : "default"}
-          className="w-full transition-all duration-300 hover:scale-105"
+          className="w-full h-8 text-sm transition-all duration-300 hover:scale-105 bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white font-bold border-2 border-yellow-300 shadow-md"
           data-spin-button="true"
         >
-          {isSpinning ? '🎰 Spinning...' : '🎰 Spin'}
+          {isSpinning ? '🎰' : '🎲'}
         </Button>
         
         {/* Selection Display */}
         {selectedValue && (
-          <div className="text-sm opacity-75 animate-slide-up">
-            Selected: <span className="font-semibold">{selectedValue}</span>
+          <div className="text-xs font-semibold text-green-700 bg-green-100 rounded-full px-2 py-1 animate-fade-in">
+            ✓ {selectedValue}
           </div>
         )}
       </div>
