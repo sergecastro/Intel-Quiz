@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { SlotMachine } from './SlotMachine';
+import { FlagSlotMachine } from './FlagSlotMachine';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -43,7 +44,7 @@ export const GameBoard = () => {
   };
 
   const checkMatch = () => {
-    const allSelected = categoryOrder.every(cat => selections[cat] !== null);
+    const allSelected = categoryOrder.every(cat => selections[cat] && selections[cat] !== null && selections[cat] !== "");
     if (!allSelected) {
       toast({
         title: "Incomplete Selection",
@@ -141,17 +142,32 @@ export const GameBoard = () => {
 
         {/* Game Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categoryOrder.map((categoryKey) => (
-            <SlotMachine
-              key={categoryKey}
-              category={categoryNames[categoryKey]}
-              options={categories[categoryKey]}
-              selectedValue={selections[categoryKey]}
-              onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
-              isMatched={isMatched}
-              isCorrect={isCorrect}
-            />
-          ))}
+          {categoryOrder.map((categoryKey) => {
+            if (categoryKey === 'flag') {
+              return (
+                <FlagSlotMachine
+                  key={categoryKey}
+                  category={categoryNames[categoryKey]}
+                  options={categories[categoryKey]}
+                  selectedValue={selections[categoryKey]}
+                  onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                  isMatched={isMatched}
+                  isCorrect={isCorrect}
+                />
+              );
+            }
+            return (
+              <SlotMachine
+                key={categoryKey}
+                category={categoryNames[categoryKey]}
+                options={categories[categoryKey]}
+                selectedValue={selections[categoryKey]}
+                onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                isMatched={isMatched}
+                isCorrect={isCorrect}
+              />
+            );
+          })}
         </div>
 
         {/* Action Buttons */}

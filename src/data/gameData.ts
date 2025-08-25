@@ -5,7 +5,21 @@ export interface GameMatch {
   currency: string;
   continent: string;
   flag: string;
+  flagImage: string;
 }
+
+import franceFlagImg from '@/assets/flags/france.png';
+import japanFlagImg from '@/assets/flags/japan.png';
+import brazilFlagImg from '@/assets/flags/brazil.png';
+import australiaFlagImg from '@/assets/flags/australia.png';
+import egyptFlagImg from '@/assets/flags/egypt.png';
+import canadaFlagImg from '@/assets/flags/canada.png';
+import germanyFlagImg from '@/assets/flags/germany.png';
+import indiaFlagImg from '@/assets/flags/india.png';
+import mexicoFlagImg from '@/assets/flags/mexico.png';
+import russiaFlagImg from '@/assets/flags/russia.png';
+import southAfricaFlagImg from '@/assets/flags/south-africa.png';
+import thailandFlagImg from '@/assets/flags/thailand.png';
 
 export const gameMatches: GameMatch[] = [
   {
@@ -14,23 +28,26 @@ export const gameMatches: GameMatch[] = [
     language: "French",
     currency: "Euro",
     continent: "Europe",
-    flag: "🇫🇷"
+    flag: "France",
+    flagImage: franceFlagImg
   },
   {
     country: "Japan",
-    capital: "Tokyo",
+    capital: "Tokyo", 
     language: "Japanese",
     currency: "Yen",
     continent: "Asia",
-    flag: "🇯🇵"
+    flag: "Japan",
+    flagImage: japanFlagImg
   },
   {
     country: "Brazil",
     capital: "Brasília",
-    language: "Portuguese",
+    language: "Portuguese", 
     currency: "Real",
     continent: "South America",
-    flag: "🇧🇷"
+    flag: "Brazil",
+    flagImage: brazilFlagImg
   },
   {
     country: "Australia",
@@ -38,7 +55,8 @@ export const gameMatches: GameMatch[] = [
     language: "English",
     currency: "Australian Dollar",
     continent: "Oceania",
-    flag: "🇦🇺"
+    flag: "Australia",
+    flagImage: australiaFlagImg
   },
   {
     country: "Egypt",
@@ -46,7 +64,8 @@ export const gameMatches: GameMatch[] = [
     language: "Arabic",
     currency: "Egyptian Pound",
     continent: "Africa",
-    flag: "🇪🇬"
+    flag: "Egypt",
+    flagImage: egyptFlagImg
   },
   {
     country: "Canada",
@@ -54,15 +73,17 @@ export const gameMatches: GameMatch[] = [
     language: "English",
     currency: "Canadian Dollar",
     continent: "North America",
-    flag: "🇨🇦"
+    flag: "Canada",
+    flagImage: canadaFlagImg
   },
   {
     country: "Germany",
     capital: "Berlin",
     language: "German",
-    currency: "Euro",
+    currency: "Euro", 
     continent: "Europe",
-    flag: "🇩🇪"
+    flag: "Germany",
+    flagImage: germanyFlagImg
   },
   {
     country: "India",
@@ -70,7 +91,8 @@ export const gameMatches: GameMatch[] = [
     language: "Hindi",
     currency: "Rupee",
     continent: "Asia",
-    flag: "🇮🇳"
+    flag: "India",
+    flagImage: indiaFlagImg
   },
   {
     country: "Mexico",
@@ -78,7 +100,8 @@ export const gameMatches: GameMatch[] = [
     language: "Spanish",
     currency: "Peso",
     continent: "North America",
-    flag: "🇲🇽"
+    flag: "Mexico",
+    flagImage: mexicoFlagImg
   },
   {
     country: "Russia",
@@ -86,7 +109,8 @@ export const gameMatches: GameMatch[] = [
     language: "Russian",
     currency: "Ruble",
     continent: "Europe",
-    flag: "🇷🇺"
+    flag: "Russia",
+    flagImage: russiaFlagImg
   },
   {
     country: "South Africa",
@@ -94,7 +118,8 @@ export const gameMatches: GameMatch[] = [
     language: "Afrikaans",
     currency: "Rand",
     continent: "Africa",
-    flag: "🇿🇦"
+    flag: "South Africa",
+    flagImage: southAfricaFlagImg
   },
   {
     country: "Thailand",
@@ -102,7 +127,8 @@ export const gameMatches: GameMatch[] = [
     language: "Thai",
     currency: "Baht",
     continent: "Asia",
-    flag: "🇹🇭"
+    flag: "Thailand",
+    flagImage: thailandFlagImg
   }
 ];
 
