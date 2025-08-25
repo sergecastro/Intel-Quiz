@@ -97,10 +97,10 @@ export const SlotMachine = ({
       
       <div className="relative z-10 text-center space-y-2">
         {/* EXCITING CATEGORY HEADER */}
-        <h3 className={`text-lg font-black transition-colors uppercase tracking-widest animate-rainbow-text ${
+        <h3 className={`text-lg font-black transition-colors uppercase tracking-widest ${
           isMatched 
-            ? isCorrect ? 'animate-bounce-crazy' : 'animate-wiggle'
-            : selectedValue ? 'text-white drop-shadow-lg' : 'text-rainbow'
+            ? isCorrect ? 'text-yellow-300 animate-bounce-crazy drop-shadow-lg' : 'text-orange-400 animate-wiggle drop-shadow-lg'
+            : selectedValue ? 'text-purple-800 drop-shadow-lg bg-yellow-200/80 px-2 py-1 rounded-full' : 'animate-rainbow-text'
         }`}>
           ✨ {category} ✨
         </h3>
@@ -112,9 +112,9 @@ export const SlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('up')}
             disabled={isSpinning}
-            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-electric hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
           >
-            <ChevronUp className="h-5 w-5 text-white animate-bounce-crazy" />
+            <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
           </Button>
           
           {/* MAGICAL SLOT WINDOW */}
@@ -125,13 +125,17 @@ export const SlotMachine = ({
             ${isSpinning ? 'animate-disco-ball' : 'hover:animate-wiggle'}
           `}>
             {/* MAGICAL INNER DISPLAY */}
-            <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-2 border-yellow-300 flex items-center justify-center shadow-inner">
+            <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-3 border-yellow-400 flex items-center justify-center shadow-inner overflow-hidden">
               <div className={`
-                text-xl font-black px-3 py-2 rounded-lg transition-all duration-300 text-center
-                ${isSpinning ? 'animate-bounce-crazy text-rainbow' : 'animate-pulse'}
-                ${selectedValue ? 'text-purple-800 bg-yellow-100 shadow-lg' : 'text-gray-800'}
+                text-xl font-black px-4 py-2 rounded-lg transition-all duration-300 text-center min-h-[3rem] flex items-center justify-center
+                ${isSpinning ? 'animate-bounce-crazy text-4xl' : 'animate-pulse'}
+                ${selectedValue ? 'text-purple-900 bg-gradient-to-b from-yellow-200 to-yellow-300 shadow-lg border-2 border-purple-400' : 'text-purple-800 bg-gradient-to-b from-blue-100 to-cyan-100'}
               `}>
-                {isSpinning ? '🎰' : options[currentIndex]}
+                {isSpinning ? '🎰✨🎲' : (
+                  <span className="drop-shadow-sm font-extrabold">
+                    {options[currentIndex]}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -141,9 +145,9 @@ export const SlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('down')}
             disabled={isSpinning}
-            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-magical hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
+            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
           >
-            <ChevronDown className="h-5 w-5 text-white animate-bounce-crazy" />
+            <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
           </Button>
         </div>
         
@@ -159,7 +163,7 @@ export const SlotMachine = ({
         
         {/* CELEBRATION DISPLAY */}
         {selectedValue && (
-          <div className="text-sm font-black text-white bg-gradient-success rounded-full px-4 py-2 animate-bounce-crazy border-2 border-yellow-300 shadow-success">
+          <div className="text-lg font-black text-purple-900 bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 rounded-full px-6 py-3 animate-bounce-crazy border-4 border-purple-400 shadow-lg">
             ✅ {selectedValue} ✅
           </div>
         )}

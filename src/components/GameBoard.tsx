@@ -88,11 +88,12 @@ export const GameBoard = () => {
       setIsCorrect(true);
       setScore(prev => prev + 1);
       playWinChime(match.country);
-      // Play country music after a delay
-      setTimeout(() => playCountryMusic(match.country), 1500);
+      // Play country music celebration with multiple rounds
+      setTimeout(() => playCountryMusic(match.country), 2000);
+      setTimeout(() => playCountryMusic(match.country), 6000);
       toast({
-        title: "🎉 AMAZING MATCH! 🎉",
-        description: `SPECTACULAR! You matched ${match.country} perfectly! Listen to their music!`,
+        title: "🎉 INCREDIBLE MATCH! 🎉",
+        description: `🌟 AMAZING! You matched ${match.country} perfectly! 🎵 Listen to their beautiful music! 🎶`,
         variant: "default"
       });
     } else {

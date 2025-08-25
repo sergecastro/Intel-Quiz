@@ -104,10 +104,10 @@ export const FlagSlotMachine = ({
       
       <div className="relative z-10 text-center space-y-2">
         {/* EXCITING CATEGORY HEADER */}
-        <h3 className={`text-lg font-black transition-colors uppercase tracking-widest animate-rainbow-text ${
+        <h3 className={`text-lg font-black transition-colors uppercase tracking-widest ${
           isMatched 
-            ? isCorrect ? 'animate-bounce-crazy' : 'animate-wiggle'
-            : selectedValue ? 'text-white drop-shadow-lg' : 'text-rainbow'
+            ? isCorrect ? 'text-yellow-300 animate-bounce-crazy drop-shadow-lg' : 'text-orange-400 animate-wiggle drop-shadow-lg'
+            : selectedValue ? 'text-purple-800 drop-shadow-lg bg-yellow-200/80 px-2 py-1 rounded-full' : 'animate-rainbow-text'
         }`}>
           ✨ {category} ✨
         </h3>
@@ -119,35 +119,37 @@ export const FlagSlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('up')}
             disabled={isSpinning}
-            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-electric hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
           >
-            <ChevronUp className="h-5 w-5 text-white animate-bounce-crazy" />
+            <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
           </Button>
           
-          {/* Slot Machine Window */}
+          {/* MAGICAL SLOT WINDOW */}
           <div className={`
-            relative mx-auto w-full h-16 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg
-            border-4 border-double border-yellow-400 shadow-inner
+            relative mx-auto w-full h-16 bg-gradient-to-b from-purple-900 via-blue-900 to-indigo-900 rounded-xl
+            border-6 border-double border-yellow-400 shadow-rainbow animate-pulse-rainbow
             flex items-center justify-center overflow-hidden
-            ${isSpinning ? 'animate-pulse' : ''}
+            ${isSpinning ? 'animate-disco-ball' : 'hover:animate-wiggle'}
           `}>
-            {/* Inner glow */}
-            <div className="absolute inset-1 bg-gradient-to-b from-blue-100 to-white rounded border border-gray-300 flex items-center justify-center">
+            {/* MAGICAL INNER DISPLAY */}
+            <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-3 border-yellow-400 flex items-center justify-center shadow-inner overflow-hidden">
               <div className={`
-                flex flex-col items-center justify-center transition-all duration-300
-                ${isSpinning ? 'animate-bounce' : ''}
+                transition-all duration-300 text-center rounded-lg p-2 min-h-[3rem] flex items-center justify-center
+                ${isSpinning ? 'animate-bounce-crazy' : 'animate-pulse'}
+                ${selectedValue ? 'bg-gradient-to-b from-yellow-200 to-yellow-300 shadow-lg border-2 border-purple-400' : 'bg-gradient-to-b from-blue-100 to-cyan-100'}
               `}>
-                {getCurrentFlagImage() ? (
-                  <>
-                    <img 
-                      src={getCurrentFlagImage()} 
-                      alt={options[currentIndex]}
-                      className="h-6 w-9 object-cover rounded border shadow-sm mb-1"
-                    />
-                    <span className="text-xs font-semibold text-blue-700">{options[currentIndex]}</span>
-                  </>
+                {isSpinning ? (
+                  <div className="text-5xl">🎰✨🎲</div>
+                ) : getCurrentFlagImage() ? (
+                  <img 
+                    src={getCurrentFlagImage()} 
+                    alt={options[currentIndex]}
+                    className="w-20 h-14 object-cover rounded-lg border-4 border-purple-400 shadow-lg transform hover:scale-105 transition-transform"
+                  />
                 ) : (
-                  <span className="text-sm font-bold text-gray-700">{options[currentIndex]}</span>
+                  <span className="text-xl font-black text-purple-800 drop-shadow-sm">
+                    {options[currentIndex]}
+                  </span>
                 )}
               </div>
             </div>
@@ -158,9 +160,9 @@ export const FlagSlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('down')}
             disabled={isSpinning}
-            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-magical hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
+            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
           >
-            <ChevronDown className="h-5 w-5 text-white animate-bounce-crazy" />
+            <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
           </Button>
         </div>
         
@@ -176,7 +178,7 @@ export const FlagSlotMachine = ({
         
         {/* CELEBRATION DISPLAY */}
         {selectedValue && (
-          <div className="text-sm font-black text-white bg-gradient-success rounded-full px-4 py-2 animate-bounce-crazy border-2 border-yellow-300 shadow-success">
+          <div className="text-lg font-black text-purple-900 bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 rounded-full px-6 py-3 animate-bounce-crazy border-4 border-purple-400 shadow-lg">
             ✅ {selectedValue} ✅
           </div>
         )}

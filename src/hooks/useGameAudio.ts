@@ -21,20 +21,20 @@ const createBeepSound = (frequency: number, duration: number, volume: number = 0
   oscillator.stop(audioContext.currentTime + duration);
 };
 
-// COUNTRY MUSIC MELODIES
+// EPIC COUNTRY MUSIC MELODIES - FULL SONGS FOR KIDS!
 const countryMelodies: { [key: string]: number[] } = {
-  'Australia': [392, 440, 523, 440, 392], // Waltzing Matilda vibes
-  'Brazil': [523, 587, 659, 587, 523, 440], // Samba rhythm
-  'France': [523, 494, 440, 392, 440, 494, 523], // La Marseillaise
-  'Germany': [523, 587, 659, 698, 659, 587, 523], // Ode to Joy
-  'India': [523, 587, 659, 698, 784, 698, 659], // Raga-inspired
-  'Japan': [523, 440, 392, 440, 523, 587, 523], // Sakura melody
-  'Mexico': [523, 659, 784, 659, 523, 440, 523], // Mariachi style
-  'Russia': [392, 440, 523, 587, 523, 440, 392], // Kalinka vibes
-  'Canada': [523, 587, 659, 587, 523, 494, 440], // O Canada
-  'Egypt': [440, 494, 523, 587, 523, 494, 440], // Ancient scale
-  'Thailand': [523, 587, 659, 784, 659, 587, 523], // Thai pentatonic
-  'South Africa': [392, 440, 523, 587, 659, 523, 440] // African rhythm
+  'Australia': [392, 440, 523, 587, 523, 440, 392, 330, 392, 440, 523, 587, 659, 587, 523], // Waltzing Matilda full
+  'Brazil': [523, 587, 659, 698, 784, 698, 659, 587, 523, 587, 659, 698, 784, 880, 784], // Samba carnival
+  'France': [523, 494, 440, 392, 440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440], // La Marseillaise epic
+  'Germany': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 587, 659, 698, 784], // Ode to Joy full
+  'India': [440, 494, 523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440], // Raga journey
+  'Japan': [523, 440, 392, 349, 392, 440, 523, 587, 523, 440, 392, 349, 330, 349, 392], // Sakura complete
+  'Mexico': [659, 784, 880, 784, 659, 587, 523, 659, 784, 880, 1047, 880, 784, 659, 587], // Mariachi fiesta
+  'Russia': [392, 440, 523, 587, 659, 587, 523, 440, 392, 349, 392, 440, 523, 587, 659], // Kalinka dance
+  'Canada': [523, 587, 659, 698, 784, 698, 659, 587, 523, 494, 440, 494, 523, 587, 659], // O Canada proud
+  'Egypt': [440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440, 392, 440, 494, 523], // Pharaoh's melody
+  'Thailand': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440, 494, 523], // Thai temple
+  'South Africa': [392, 440, 523, 587, 659, 698, 784, 698, 659, 587, 523, 440, 392, 349, 392] // Ubuntu rhythm
 };
 
 const createEpicSpinSound = () => {
@@ -65,25 +65,43 @@ const playCountryMelody = (country: string) => {
   const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
   const melody = countryMelodies[country] || countryMelodies['Australia']; // Default melody
   
+  // Play beautiful country melodies with multiple instruments
   melody.forEach((frequency, index) => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    // Main melody
+    const oscillator1 = audioContext.createOscillator();
+    const gainNode1 = audioContext.createGain();
+    oscillator1.connect(gainNode1);
+    gainNode1.connect(audioContext.destination);
+    oscillator1.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    oscillator1.type = 'sine';
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    // Harmony (lower octave)
+    const oscillator2 = audioContext.createOscillator();
+    const gainNode2 = audioContext.createGain();
+    oscillator2.connect(gainNode2);
+    gainNode2.connect(audioContext.destination);
+    oscillator2.frequency.setValueAtTime(frequency * 0.5, audioContext.currentTime);
+    oscillator2.type = 'triangle';
     
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.type = 'sine';
+    const startTime = audioContext.currentTime + (index * 0.25);
+    const duration = 0.3;
+    const volume1 = 0.5;
+    const volume2 = 0.2;
     
-    const startTime = audioContext.currentTime + (index * 0.15);
-    const duration = 0.2;
+    // Main melody
+    gainNode1.gain.setValueAtTime(0, startTime);
+    gainNode1.gain.linearRampToValueAtTime(volume1, startTime + 0.02);
+    gainNode1.gain.linearRampToValueAtTime(0, startTime + duration);
     
-    gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.01);
-    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+    // Harmony
+    gainNode2.gain.setValueAtTime(0, startTime);
+    gainNode2.gain.linearRampToValueAtTime(volume2, startTime + 0.02);
+    gainNode2.gain.linearRampToValueAtTime(0, startTime + duration);
     
-    oscillator.start(startTime);
-    oscillator.stop(startTime + duration);
+    oscillator1.start(startTime);
+    oscillator1.stop(startTime + duration);
+    oscillator2.start(startTime);
+    oscillator2.stop(startTime + duration);
   });
 };
 
@@ -213,9 +231,13 @@ export const useGameAudio = () => {
       // First play the mega success sound
       createMegaSuccessSound();
       
-      // Then play country melody after a delay
+      // Then play full country melody after a delay
       if (country) {
-        setTimeout(() => playCountryMelody(country), 1000);
+        setTimeout(() => {
+          playCountryMelody(country);
+          // Play it again for emphasis
+          setTimeout(() => playCountryMelody(country), 4000);
+        }, 1200);
       }
     } catch (error) {
       console.warn('Audio playback failed:', error);
