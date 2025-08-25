@@ -158,7 +158,7 @@ export const GameBoard = () => {
           <div className="text-center space-y-6">
             <div className="flex items-center justify-center gap-4">
               <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
-              <h1 className="text-6xl font-bold animate-rainbow-text animate-bounce-crazy">
+              <h1 className="text-6xl font-bold text-blue-900 drop-shadow-2xl bg-gradient-to-r from-yellow-200 to-pink-200 rounded-3xl py-4 px-8 border-4 border-purple-400">
                 🌍 WORLD MATCH ADVENTURE! 🌍
               </h1>
               <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />

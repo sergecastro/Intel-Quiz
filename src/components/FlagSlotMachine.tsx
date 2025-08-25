@@ -106,8 +106,8 @@ export const FlagSlotMachine = ({
         {/* EXCITING CATEGORY HEADER */}
         <h3 className={`text-lg font-black transition-colors uppercase tracking-widest ${
           isMatched 
-            ? isCorrect ? 'text-yellow-300 animate-bounce-crazy drop-shadow-lg' : 'text-orange-400 animate-wiggle drop-shadow-lg'
-            : selectedValue ? 'text-purple-800 drop-shadow-lg bg-yellow-200/80 px-2 py-1 rounded-full' : 'animate-rainbow-text'
+            ? isCorrect ? 'text-green-800 animate-bounce-crazy drop-shadow-lg' : 'text-red-700 animate-wiggle drop-shadow-lg'
+            : selectedValue ? 'text-blue-900 drop-shadow-lg bg-cyan-200/90 px-3 py-2 rounded-full border-2 border-blue-400' : 'text-purple-900 drop-shadow-lg'
         }`}>
           ✨ {category} ✨
         </h3>
@@ -175,13 +175,6 @@ export const FlagSlotMachine = ({
         >
           {isSpinning ? '🎰✨🎰' : '🎲 SPIN! 🎲'}
         </Button>
-        
-        {/* CELEBRATION DISPLAY */}
-        {selectedValue && (
-          <div className="text-lg font-black text-purple-900 bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-300 rounded-full px-6 py-3 animate-bounce-crazy border-4 border-purple-400 shadow-lg">
-            ✅ {selectedValue} ✅
-          </div>
-        )}
       </div>
     </Card>
   );
