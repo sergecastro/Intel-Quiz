@@ -163,10 +163,10 @@ export const GameBoard = () => {
               </h1>
               <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
             </div>
-            <p className="text-2xl font-bold text-yellow-100 animate-wiggle">
+            <p className="text-2xl font-bold text-white bg-blue-800/80 px-4 py-2 rounded-2xl border-2 border-yellow-300 shadow-lg">
               🎵 Match countries and hear their amazing music! 🎵
             </p>
-            <div className="text-lg font-semibold text-white/90">
+            <div className="text-lg font-semibold text-white bg-purple-800/80 px-4 py-2 rounded-2xl border-2 border-pink-300 shadow-lg">
               Spin the magical slots and discover the world! 🎰✨
             </div>
             <div className="flex justify-center gap-6 flex-wrap">
@@ -174,7 +174,7 @@ export const GameBoard = () => {
                 <Trophy className="h-6 w-6 mr-3 text-yellow-300" />
                 SCORE: {score} 🏆
               </Badge>
-              <Badge className="text-2xl px-6 py-3 bg-gradient-magical text-white border-4 border-cyan-300 animate-wiggle shadow-electric">
+              <Badge className="text-2xl px-6 py-3 bg-green-600 text-white border-4 border-yellow-300 animate-wiggle shadow-rainbow">
                 TRIES: {attempts} 🎯
               </Badge>
               <Button

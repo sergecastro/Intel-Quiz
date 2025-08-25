@@ -159,7 +159,7 @@ export const SlotMachine = ({
         <Button
           onClick={handleSpin}
           disabled={isSpinning}
-          className="w-full h-12 text-lg font-black transition-all duration-300 hover:scale-110 bg-gradient-rainbow hover:animate-wiggle text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
+          className="w-full h-12 text-lg font-black transition-all duration-300 hover:scale-110 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
           data-spin-button="true"
         >
           {isSpinning ? '🎰✨🎰' : '🎲 SPIN! 🎲'}
