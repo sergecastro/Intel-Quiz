@@ -44,7 +44,14 @@ export const GameBoard = () => {
   };
 
   const checkMatch = () => {
-    const allSelected = categoryOrder.every(cat => selections[cat] && selections[cat] !== null && selections[cat] !== "");
+    console.log('Current selections:', selections);
+    const allSelected = categoryOrder.every(cat => {
+      const value = selections[cat];
+      console.log(`Category ${cat}: "${value}" (type: ${typeof value})`);
+      return value && value !== null && value !== "";
+    });
+    console.log('All selected:', allSelected);
+    
     if (!allSelected) {
       toast({
         title: "Incomplete Selection",
