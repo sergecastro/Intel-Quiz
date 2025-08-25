@@ -193,8 +193,10 @@ export const GameBoard = () => {
   };
 
   const showCorrectAnswer = () => {
-    // Pick a random correct match
-    const randomMatch = gameMatches[Math.floor(Math.random() * gameMatches.length)];
+    // Use the user's selected country to teach the correct match
+    const userSelectedCountry = selections.country;
+    const correctMatch = gameMatches.find(match => match.country === userSelectedCountry) || 
+                        gameMatches[Math.floor(Math.random() * gameMatches.length)];
     
     // First, trigger exciting spin animations 4 times
     let spinCount = 0;
@@ -208,38 +210,38 @@ export const GameBoard = () => {
         
         // After 4 spins, show the correct educational answer
         setTimeout(() => {
-          speakText(`Here's the perfect match! ${randomMatch.country} is the country!`);
+          speakText(`Here's the perfect match! ${correctMatch.country} is the country!`);
           
           // Set selections one by one with voice feedback
-          setSelections(prev => ({ ...prev, country: randomMatch.country }));
+          setSelections(prev => ({ ...prev, country: correctMatch.country }));
           
           setTimeout(() => {
-            speakText(`${randomMatch.capital} is the capital of ${randomMatch.country}!`);
-            setSelections(prev => ({ ...prev, capital: randomMatch.capital }));
+            speakText(`${correctMatch.capital} is the capital of ${correctMatch.country}!`);
+            setSelections(prev => ({ ...prev, capital: correctMatch.capital }));
           }, 1000);
           
           setTimeout(() => {
-            speakText(`${randomMatch.language} is the language of ${randomMatch.country}!`);
-            setSelections(prev => ({ ...prev, language: randomMatch.language }));
+            speakText(`${correctMatch.language} is the language of ${correctMatch.country}!`);
+            setSelections(prev => ({ ...prev, language: correctMatch.language }));
           }, 2000);
           
           setTimeout(() => {
-            speakText(`${randomMatch.currency} is the currency of ${randomMatch.country}!`);
-            setSelections(prev => ({ ...prev, currency: randomMatch.currency }));
+            speakText(`${correctMatch.currency} is the currency of ${correctMatch.country}!`);
+            setSelections(prev => ({ ...prev, currency: correctMatch.currency }));
           }, 3000);
           
           setTimeout(() => {
-            speakText(`${randomMatch.continent} is the continent where ${randomMatch.country} is located!`);
-            setSelections(prev => ({ ...prev, continent: randomMatch.continent }));
+            speakText(`${correctMatch.continent} is the continent where ${correctMatch.country} is located!`);
+            setSelections(prev => ({ ...prev, continent: correctMatch.continent }));
           }, 4000);
           
           setTimeout(() => {
-            speakText(`And this is the flag of ${randomMatch.country}! Study this perfect match!`);
-            setSelections(prev => ({ ...prev, flag: randomMatch.flag }));
+            speakText(`And this is the flag of ${correctMatch.country}! Study this perfect match!`);
+            setSelections(prev => ({ ...prev, flag: correctMatch.flag }));
             
             toast({
               title: "🎓 EDUCATIONAL MOMENT! 🎓",
-              description: `Perfect match for ${randomMatch.country}! Learn this combination!`,
+              description: `Perfect match for ${correctMatch.country}! Learn this combination!`,
               variant: "default"
             });
           }, 5000);
