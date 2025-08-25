@@ -11,6 +11,10 @@ interface SlotMachineProps {
   onSelectionChange: (value: string) => void;
   isMatched: boolean;
   isCorrect?: boolean;
+  audio?: {
+    playSpinSound: () => void;
+    playSelectSound: () => void;
+  };
 }
 
 export const SlotMachine = ({ 
@@ -19,7 +23,8 @@ export const SlotMachine = ({
   selectedValue, 
   onSelectionChange,
   isMatched,
-  isCorrect
+  isCorrect,
+  audio
 }: SlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -37,6 +42,7 @@ export const SlotMachine = ({
   const handleSpin = () => {
     if (isSpinning) return;
     
+    audio?.playSpinSound();
     setIsSpinning(true);
     const spinDuration = 1000 + Math.random() * 1000; // 1-2 seconds
     const finalIndex = Math.floor(Math.random() * options.length);
@@ -49,6 +55,7 @@ export const SlotMachine = ({
       clearInterval(interval);
       setCurrentIndex(finalIndex);
       setIsSpinning(false);
+      audio?.playSelectSound();
       onSelectionChange(options[finalIndex]);
     }, spinDuration);
   };
@@ -56,6 +63,7 @@ export const SlotMachine = ({
   const handleManualSelect = (direction: 'up' | 'down') => {
     if (isSpinning) return;
     
+    audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
       : (currentIndex + 1) % options.length;

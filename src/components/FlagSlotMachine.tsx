@@ -12,6 +12,10 @@ interface FlagSlotMachineProps {
   onSelectionChange: (value: string) => void;
   isMatched: boolean;
   isCorrect?: boolean;
+  audio?: {
+    playSpinSound: () => void;
+    playSelectSound: () => void;
+  };
 }
 
 export const FlagSlotMachine = ({ 
@@ -20,7 +24,8 @@ export const FlagSlotMachine = ({
   selectedValue, 
   onSelectionChange,
   isMatched,
-  isCorrect
+  isCorrect,
+  audio
 }: FlagSlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -38,6 +43,7 @@ export const FlagSlotMachine = ({
   const handleSpin = () => {
     if (isSpinning) return;
     
+    audio?.playSpinSound();
     setIsSpinning(true);
     const spinDuration = 1000 + Math.random() * 1000; // 1-2 seconds
     const finalIndex = Math.floor(Math.random() * options.length);
@@ -50,6 +56,7 @@ export const FlagSlotMachine = ({
       clearInterval(interval);
       setCurrentIndex(finalIndex);
       setIsSpinning(false);
+      audio?.playSelectSound();
       onSelectionChange(options[finalIndex]);
     }, spinDuration);
   };
@@ -57,6 +64,7 @@ export const FlagSlotMachine = ({
   const handleManualSelect = (direction: 'up' | 'down') => {
     if (isSpinning) return;
     
+    audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
       : (currentIndex + 1) % options.length;

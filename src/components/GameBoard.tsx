@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { gameMatches, categories, categoryNames, type CategoryKey } from '@/data/gameData';
 import { Sparkles, RotateCcw, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useGameAudio } from '@/hooks/useGameAudio';
 
 interface Selections {
   country: string | null;
@@ -32,6 +33,7 @@ export const GameBoard = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const { toast } = useToast();
+  const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, toggleAudio, isEnabled } = useGameAudio();
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
@@ -49,6 +51,7 @@ export const GameBoard = () => {
   };
 
   const checkMatch = () => {
+    playButtonSound();
     console.log('Current selections:', selections);
     const allSelected = categoryOrder.every(cat => {
       const value = selections[cat];
@@ -58,6 +61,7 @@ export const GameBoard = () => {
     console.log('All selected:', allSelected);
     
     if (!allSelected) {
+      playErrorSound();
       toast({
         title: "Incomplete Selection",
         description: "Please select an item from each category!",
@@ -83,6 +87,7 @@ export const GameBoard = () => {
     if (match) {
       setIsCorrect(true);
       setScore(prev => prev + 1);
+      playWinChime();
       toast({
         title: "🎉 Perfect Match!",
         description: `Amazing! You matched ${match.country} correctly!`,
@@ -90,6 +95,7 @@ export const GameBoard = () => {
       });
     } else {
       setIsCorrect(false);
+      playErrorSound();
       toast({
         title: "Not quite right",
         description: "These items don't match. Try again!",
@@ -99,6 +105,7 @@ export const GameBoard = () => {
   };
 
   const spinAllSlots = () => {
+    playButtonSound();
     // Trigger spin on all slot machines
     const spinButtons = document.querySelectorAll('[data-spin-button="true"]');
     spinButtons.forEach(button => {
@@ -123,6 +130,7 @@ export const GameBoard = () => {
   };
 
   const resetAll = () => {
+    playButtonSound();
     console.log('resetAll called');
     resetGame();
     setScore(0);
@@ -160,6 +168,17 @@ export const GameBoard = () => {
               <Badge variant="outline" className="text-lg px-4 py-2 bg-white/10 border-white/20">
                 Attempts: {attempts}
               </Badge>
+              <Button
+                onClick={() => {
+                  playButtonSound();
+                  toggleAudio();
+                }}
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+              >
+                {isEnabled ? '🔊' : '🔇'}
+              </Button>
             </div>
           </div>
         </Card>
@@ -175,6 +194,7 @@ export const GameBoard = () => {
                   options={categories[categoryKey]}
                   selectedValue={selections[categoryKey]}
                   onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                  audio={{ playSpinSound, playSelectSound }}
                   isMatched={isMatched}
                   isCorrect={isCorrect}
                 />
@@ -187,6 +207,7 @@ export const GameBoard = () => {
                 options={categories[categoryKey]}
                 selectedValue={selections[categoryKey]}
                 onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                audio={{ playSpinSound, playSelectSound }}
                 isMatched={isMatched}
                 isCorrect={isCorrect}
               />
