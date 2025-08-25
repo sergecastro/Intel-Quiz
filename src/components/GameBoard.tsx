@@ -69,8 +69,9 @@ export const GameBoard = () => {
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
-  // Speech delay timer
+  // Speech delay timer and failure tracking
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
+  const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
 
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
@@ -86,10 +87,10 @@ export const GameBoard = () => {
         clearTimeout(speechTimer);
       }
       
-      // Set new timer to speak after 500ms pause
+      // Set new timer to speak after 2 seconds pause for better detection
       const newTimer = setTimeout(() => {
         provideFeedback(category, value, newSelections);
-      }, 500);
+      }, 2000);
       setSpeechTimer(newTimer);
       
       return newSelections;
@@ -104,6 +105,8 @@ export const GameBoard = () => {
     }
 
     if (category === 'country') {
+      // Reset failures when new country is chosen
+      setCategoryFailures({});
       speakText(`${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`);
       return;
     }
@@ -117,6 +120,8 @@ export const GameBoard = () => {
     const nextCategory = nextCategoryIndex < categoryOrder.length ? categoryOrder[nextCategoryIndex] : null;
 
     if (isCorrect) {
+      // Reset failures for this category on success
+      setCategoryFailures(prev => ({ ...prev, [category]: 0 }));
       let message = `BRAVO! ${value.toUpperCase()} IS CORRECT FOR ${currentSelections.country?.toUpperCase()}!`;
       if (nextCategory) {
         const nextCategoryName = categoryNames[nextCategory];
@@ -126,8 +131,18 @@ export const GameBoard = () => {
       }
       speakText(message);
     } else {
-      const correctValue = correctMatch[category];
-      speakText(`NO! ${correctValue?.toUpperCase()} IS THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}!`);
+      // Track failures for this category
+      const currentFailures = (categoryFailures[category] || 0) + 1;
+      setCategoryFailures(prev => ({ ...prev, [category]: currentFailures }));
+      
+      if (currentFailures >= 3) {
+        // After 3 failures, reveal the correct answer
+        const correctValue = correctMatch[category];
+        speakText(`NO! AFTER THREE TRIES, THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()} IS ${correctValue?.toUpperCase()}! TRY AGAIN!`);
+      } else {
+        // Don't reveal answer, just say it's wrong
+        speakText(`NO! ${value.toUpperCase()} IS NOT THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}! PLEASE TRY AGAIN!`);
+      }
     }
   };
 
