@@ -75,34 +75,34 @@ export const SlotMachine = ({
   const getCardStyle = () => {
     if (isMatched) {
       return isCorrect 
-        ? 'bg-gradient-success shadow-success border-success animate-pulse-glow' 
-        : 'bg-gradient-warm border-warning';
+        ? 'bg-gradient-success shadow-success border-success animate-bounce-crazy' 
+        : 'bg-gradient-warm border-warning animate-wiggle';
     }
     return selectedValue 
-      ? 'bg-gradient-primary shadow-glow border-primary' 
-      : 'bg-card border-border hover:border-primary';
+      ? 'bg-gradient-electric shadow-electric border-primary animate-pulse-rainbow' 
+      : 'bg-gradient-magical border-border hover:border-primary hover:animate-pulse-rainbow';
   };
 
   return (
-    <Card className={`relative p-3 transition-all duration-300 ${getCardStyle()} 
-      border-4 border-double overflow-hidden
-      before:absolute before:inset-0 before:bg-gradient-to-br before:from-yellow-200/20 before:to-orange-200/20 before:rounded-lg
-      shadow-lg hover:shadow-xl transform hover:scale-[1.02]`}>
+    <Card className={`relative p-4 transition-all duration-500 ${getCardStyle()} 
+      border-6 border-double overflow-hidden animate-pulse-rainbow
+      before:absolute before:inset-0 before:bg-gradient-rainbow before:opacity-20 before:rounded-lg before:animate-rainbow-shift
+      shadow-rainbow hover:shadow-electric transform hover:scale-110 hover:animate-wiggle`}>
       
-      {/* Decorative corners */}
-      <div className="absolute top-1 left-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-      <div className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-      <div className="absolute bottom-1 left-1 w-3 h-3 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-      <div className="absolute bottom-1 right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+      {/* MAGICAL CORNER GEMS */}
+      <div className="absolute top-2 left-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-disco-ball shadow-glow"></div>
+      <div className="absolute top-2 right-2 w-4 h-4 bg-gradient-to-r from-red-400 to-pink-500 rounded-full animate-disco-ball shadow-glow" style={{animationDelay: '0.5s'}}></div>
+      <div className="absolute bottom-2 left-2 w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full animate-disco-ball shadow-glow" style={{animationDelay: '1s'}}></div>
+      <div className="absolute bottom-2 right-2 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-disco-ball shadow-glow" style={{animationDelay: '1.5s'}}></div>
       
       <div className="relative z-10 text-center space-y-2">
-        {/* Category Header */}
-        <h3 className={`text-sm font-bold transition-colors uppercase tracking-wide ${
+        {/* EXCITING CATEGORY HEADER */}
+        <h3 className={`text-lg font-black transition-colors uppercase tracking-widest animate-rainbow-text ${
           isMatched 
-            ? isCorrect ? 'text-success-foreground' : 'text-warning-foreground'
-            : selectedValue ? 'text-primary-foreground' : 'text-foreground'
+            ? isCorrect ? 'animate-bounce-crazy' : 'animate-wiggle'
+            : selectedValue ? 'text-white drop-shadow-lg' : 'text-rainbow'
         }`}>
-          {category}
+          ✨ {category} ✨
         </h3>
         
         {/* Slot Display */}
@@ -112,26 +112,26 @@ export const SlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('up')}
             disabled={isSpinning}
-            className="absolute -top-1 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform z-20 h-6 w-6 p-0 bg-gradient-to-b from-pink-300 to-pink-400 hover:from-pink-400 hover:to-pink-500 rounded-full"
+            className="absolute -top-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-electric hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
           >
-            <ChevronUp className="h-3 w-3 text-white" />
+            <ChevronUp className="h-5 w-5 text-white animate-bounce-crazy" />
           </Button>
           
-          {/* Slot Machine Window */}
+          {/* MAGICAL SLOT WINDOW */}
           <div className={`
-            relative mx-auto w-full h-14 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg
-            border-4 border-double border-yellow-400 shadow-inner
+            relative mx-auto w-full h-16 bg-gradient-to-b from-purple-900 via-blue-900 to-indigo-900 rounded-xl
+            border-6 border-double border-yellow-400 shadow-rainbow animate-pulse-rainbow
             flex items-center justify-center overflow-hidden
-            ${isSpinning ? 'animate-pulse' : ''}
+            ${isSpinning ? 'animate-disco-ball' : 'hover:animate-wiggle'}
           `}>
-            {/* Inner glow */}
-            <div className="absolute inset-1 bg-gradient-to-b from-blue-100 to-white rounded border border-gray-300 flex items-center justify-center">
+            {/* MAGICAL INNER DISPLAY */}
+            <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-2 border-yellow-300 flex items-center justify-center shadow-inner">
               <div className={`
-                text-lg font-bold px-2 py-1 rounded transition-all duration-300 text-center
-                ${isSpinning ? 'animate-bounce' : ''}
-                ${selectedValue ? 'text-blue-700' : 'text-gray-700'}
+                text-xl font-black px-3 py-2 rounded-lg transition-all duration-300 text-center
+                ${isSpinning ? 'animate-bounce-crazy text-rainbow' : 'animate-pulse'}
+                ${selectedValue ? 'text-purple-800 bg-yellow-100 shadow-lg' : 'text-gray-800'}
               `}>
-                {options[currentIndex]}
+                {isSpinning ? '🎰' : options[currentIndex]}
               </div>
             </div>
           </div>
@@ -141,27 +141,26 @@ export const SlotMachine = ({
             size="sm"
             onClick={() => handleManualSelect('down')}
             disabled={isSpinning}
-            className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 hover:scale-110 transition-transform z-20 h-6 w-6 p-0 bg-gradient-to-b from-cyan-300 to-cyan-400 hover:from-cyan-400 hover:to-cyan-500 rounded-full"
+            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 hover:scale-125 transition-all duration-300 z-20 h-8 w-8 p-0 bg-gradient-magical hover:animate-bounce-crazy rounded-full border-2 border-white shadow-electric"
           >
-            <ChevronDown className="h-3 w-3 text-white" />
+            <ChevronDown className="h-5 w-5 text-white animate-bounce-crazy" />
           </Button>
         </div>
         
-        {/* Spin Button */}
+        {/* MEGA SPIN BUTTON */}
         <Button
           onClick={handleSpin}
           disabled={isSpinning}
-          variant={selectedValue ? "secondary" : "default"}
-          className="w-full h-8 text-sm transition-all duration-300 hover:scale-105 bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white font-bold border-2 border-yellow-300 shadow-md"
+          className="w-full h-12 text-lg font-black transition-all duration-300 hover:scale-110 bg-gradient-rainbow hover:animate-wiggle text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
           data-spin-button="true"
         >
-          {isSpinning ? '🎰' : '🎲'}
+          {isSpinning ? '🎰✨🎰' : '🎲 SPIN! 🎲'}
         </Button>
         
-        {/* Selection Display */}
+        {/* CELEBRATION DISPLAY */}
         {selectedValue && (
-          <div className="text-xs font-semibold text-green-700 bg-green-100 rounded-full px-2 py-1 animate-fade-in">
-            ✓ {selectedValue}
+          <div className="text-sm font-black text-white bg-gradient-success rounded-full px-4 py-2 animate-bounce-crazy border-2 border-yellow-300 shadow-success">
+            ✅ {selectedValue} ✅
           </div>
         )}
       </div>

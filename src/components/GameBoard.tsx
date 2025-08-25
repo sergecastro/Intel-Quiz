@@ -33,7 +33,7 @@ export const GameBoard = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const { toast } = useToast();
-  const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, toggleAudio, isEnabled } = useGameAudio();
+  const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
@@ -87,10 +87,12 @@ export const GameBoard = () => {
     if (match) {
       setIsCorrect(true);
       setScore(prev => prev + 1);
-      playWinChime();
+      playWinChime(match.country);
+      // Play country music after a delay
+      setTimeout(() => playCountryMusic(match.country), 1500);
       toast({
-        title: "🎉 Perfect Match!",
-        description: `Amazing! You matched ${match.country} correctly!`,
+        title: "🎉 AMAZING MATCH! 🎉",
+        description: `SPECTACULAR! You matched ${match.country} perfectly! Listen to their music!`,
         variant: "default"
       });
     } else {
@@ -105,12 +107,13 @@ export const GameBoard = () => {
   };
 
   const spinAllSlots = () => {
-    playButtonSound();
-    // Trigger spin on all slot machines
+    playExcitementSound();
+    // Trigger spin on all slot machines with excitement!
     const spinButtons = document.querySelectorAll('[data-spin-button="true"]');
-    spinButtons.forEach(button => {
+    spinButtons.forEach((button, index) => {
       if (button instanceof HTMLButtonElement && !button.disabled) {
-        button.click();
+        // Stagger the spins for more excitement
+        setTimeout(() => button.click(), index * 100);
       }
     });
   };
@@ -149,35 +152,39 @@ export const GameBoard = () => {
   return (
     <div className="min-h-screen bg-gradient-bg p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <Card className="p-6 bg-gradient-primary text-primary-foreground shadow-glow">
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <Sparkles className="h-8 w-8 animate-pulse-glow" />
-              <h1 className="text-4xl font-bold">World Match Game</h1>
-              <Sparkles className="h-8 w-8 animate-pulse-glow" />
+        {/* SUPER EXCITING HEADER */}
+        <Card className="p-8 bg-gradient-electric text-white shadow-rainbow animate-pulse-rainbow border-4 border-double border-white/30">
+          <div className="text-center space-y-6">
+            <div className="flex items-center justify-center gap-4">
+              <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
+              <h1 className="text-6xl font-bold animate-rainbow-text animate-bounce-crazy">
+                🌍 WORLD MATCH ADVENTURE! 🌍
+              </h1>
+              <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
             </div>
-            <p className="text-lg opacity-90">
-              Choose matching items from each category to learn about countries around the world!
+            <p className="text-2xl font-bold text-yellow-100 animate-wiggle">
+              🎵 Match countries and hear their amazing music! 🎵
             </p>
-            <div className="flex justify-center gap-4">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
-                <Trophy className="h-4 w-4 mr-2" />
-                Score: {score}
+            <div className="text-lg font-semibold text-white/90">
+              Spin the magical slots and discover the world! 🎰✨
+            </div>
+            <div className="flex justify-center gap-6 flex-wrap">
+              <Badge className="text-2xl px-6 py-3 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow">
+                <Trophy className="h-6 w-6 mr-3 text-yellow-300" />
+                SCORE: {score} 🏆
               </Badge>
-              <Badge variant="outline" className="text-lg px-4 py-2 bg-white/10 border-white/20">
-                Attempts: {attempts}
+              <Badge className="text-2xl px-6 py-3 bg-gradient-magical text-white border-4 border-cyan-300 animate-wiggle shadow-electric">
+                TRIES: {attempts} 🎯
               </Badge>
               <Button
                 onClick={() => {
                   playButtonSound();
                   toggleAudio();
                 }}
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20"
+                className="text-2xl px-6 py-3 bg-gradient-warm text-white border-4 border-white/50 hover:scale-110 transition-all duration-300 animate-pulse-rainbow"
+                size="lg"
               >
-                {isEnabled ? '🔊' : '🔇'}
+                {isEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF'}
               </Button>
             </div>
           </div>
@@ -215,47 +222,52 @@ export const GameBoard = () => {
           })}
         </div>
 
-        {/* Action Buttons */}
-        <Card className="p-6">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        {/* SUPER ACTION BUTTONS */}
+        <Card className="p-8 bg-gradient-magical border-4 border-double border-yellow-400 shadow-rainbow">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button
               onClick={checkMatch}
               size="lg"
-              className="bg-gradient-success hover:scale-105 transition-all duration-300 text-lg px-8"
+              className="bg-gradient-success text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
               disabled={isMatched}
             >
-              <Sparkles className="h-5 w-5 mr-2" />
-              Check Match
+              <Sparkles className="h-8 w-8 mr-3 animate-disco-ball" />
+              ✨ CHECK MATCH! ✨
             </Button>
             
             <Button
               onClick={spinAllSlots}
-              variant="outline"
               size="lg"
-              className="text-lg px-8 hover:scale-105 transition-all duration-300"
+              className="bg-gradient-electric text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-wiggle shadow-electric font-bold"
             >
-              <RotateCcw className="h-5 w-5 mr-2" />
-              Spin All
+              <RotateCcw className="h-8 w-8 mr-3 animate-bounce-crazy" />
+              🎰 SPIN ALL! 🎰
             </Button>
             
             <Button
               onClick={resetAll}
-              variant="secondary"
               size="lg"
-              className="text-lg px-8 hover:scale-105 transition-all duration-300"
+              className="bg-gradient-warm text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
             >
-              Reset All
+              🔄 NEW GAME! 🔄
             </Button>
           </div>
         </Card>
 
-        {/* Success Message */}
+        {/* MEGA SUCCESS CELEBRATION */}
         {isMatched && isCorrect && (
-          <Card className="p-6 bg-gradient-success text-success-foreground shadow-success animate-slide-up">
-            <div className="text-center space-y-2">
-              <div className="text-6xl animate-bounce-soft">🎉</div>
-              <h2 className="text-2xl font-bold">Fantastic Job!</h2>
-              <p className="text-lg">You found a perfect match! Starting a new round in 3 seconds...</p>
+          <Card className="p-12 bg-gradient-rainbow text-white shadow-rainbow animate-bounce-crazy border-8 border-double border-yellow-300">
+            <div className="text-center space-y-6">
+              <div className="text-9xl animate-disco-ball">🎉🏆🎉</div>
+              <h2 className="text-6xl font-bold animate-rainbow-text animate-wiggle">
+                🌟 SPECTACULAR VICTORY! 🌟
+              </h2>
+              <p className="text-3xl font-bold text-yellow-100 animate-bounce-crazy">
+                🎵 LISTEN TO THE COUNTRY'S MUSIC! 🎵
+              </p>
+              <div className="text-2xl text-white/90 animate-pulse">
+                Get ready for the next amazing adventure in 3 seconds! ✨
+              </div>
             </div>
           </Card>
         )}
