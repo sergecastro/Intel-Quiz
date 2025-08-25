@@ -36,10 +36,15 @@ export const GameBoard = () => {
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
   const handleSelectionChange = (category: CategoryKey, value: string) => {
-    setSelections(prev => ({
-      ...prev,
-      [category]: value
-    }));
+    console.log(`handleSelectionChange called: category=${category}, value=${value}`);
+    setSelections(prev => {
+      const newSelections = {
+        ...prev,
+        [category]: value
+      };
+      console.log('New selections after update:', newSelections);
+      return newSelections;
+    });
     setIsMatched(false);
   };
 
