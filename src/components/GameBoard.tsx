@@ -32,8 +32,41 @@ export const GameBoard = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [consecutiveFailures, setConsecutiveFailures] = useState(0);
+  const [showingCorrectAnswer, setShowingCorrectAnswer] = useState(false);
   const { toast } = useToast();
   const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
+
+  // Text-to-Speech function using ElevenLabs
+  const speakText = async (text: string) => {
+    try {
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x', {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': process.env.ELEVENLABS_API_KEY || ''
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_turbo_v2_5',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.5
+          }
+        })
+      });
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }
+    } catch (error) {
+      console.log('Voice synthesis not available:', error);
+    }
+  };
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
@@ -48,6 +81,10 @@ export const GameBoard = () => {
       return newSelections;
     });
     setIsMatched(false);
+    
+    // Speak the selection
+    const categoryName = categoryNames[category];
+    speakText(`${value} is the ${categoryName.toLowerCase()}`);
   };
 
   const checkMatch = () => {
@@ -87,7 +124,9 @@ export const GameBoard = () => {
     if (match) {
       setIsCorrect(true);
       setScore(prev => prev + 1);
+      setConsecutiveFailures(0);  // Reset failures on success
       playWinChime(match.country);
+      speakText(`Perfect match! ${match.country} is absolutely correct!`);
       // Play country music celebration with multiple rounds
       setTimeout(() => playCountryMusic(match.country), 2000);
       setTimeout(() => playCountryMusic(match.country), 6000);
@@ -98,12 +137,35 @@ export const GameBoard = () => {
       });
     } else {
       setIsCorrect(false);
+      const newFailures = consecutiveFailures + 1;
+      setConsecutiveFailures(newFailures);
+      
+      // Provide specific feedback about what's wrong
+      const country = selections.country;
+      const capital = selections.capital;
+      
+      // Find correct capital for selected country
+      const correctMatch = gameMatches.find(match => match.country === country);
+      let feedbackText = "That combination is not correct. ";
+      
+      if (country && capital && correctMatch && correctMatch.capital !== capital) {
+        feedbackText = `${capital} is not the capital of ${country}. The correct capital is ${correctMatch.capital}. Try again!`;
+      }
+      
+      speakText(feedbackText);
       playErrorSound();
-      toast({
-        title: "Not quite right",
-        description: "These items don't match. Try again!",
-        variant: "destructive"
-      });
+      
+      // After 3 failures, show correct answer
+      if (newFailures >= 3) {
+        setShowingCorrectAnswer(true);
+        showCorrectAnswer();
+      } else {
+        toast({
+          title: "Not quite right",
+          description: "These items don't match. Try again!",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -117,6 +179,37 @@ export const GameBoard = () => {
         setTimeout(() => button.click(), index * 100);
       }
     });
+  };
+
+  const showCorrectAnswer = () => {
+    // Pick a random correct match
+    const randomMatch = gameMatches[Math.floor(Math.random() * gameMatches.length)];
+    
+    speakText(`Let me show you the correct answer! Watch carefully as I demonstrate a perfect match with ${randomMatch.country}!`);
+    
+    // Show the correct selections with spinning effect
+    setTimeout(() => {
+      setSelections({
+        country: randomMatch.country,
+        capital: randomMatch.capital,
+        language: randomMatch.language,
+        currency: randomMatch.currency,
+        continent: randomMatch.continent,
+        flag: randomMatch.flag
+      });
+      
+      toast({
+        title: "📚 Learning Time! 📚",
+        description: `Here's a perfect match for ${randomMatch.country}! Study this combination and try again.`,
+        variant: "default"
+      });
+      
+      setTimeout(() => {
+        setShowingCorrectAnswer(false);
+        setConsecutiveFailures(0);
+        resetGame();
+      }, 5000);
+    }, 1000);
   };
 
   const resetGame = () => {
@@ -139,6 +232,8 @@ export const GameBoard = () => {
     resetGame();
     setScore(0);
     setAttempts(0);
+    setConsecutiveFailures(0);
+    setShowingCorrectAnswer(false);
   };
 
   useEffect(() => {
@@ -177,6 +272,11 @@ export const GameBoard = () => {
               <Badge className="text-2xl px-6 py-3 bg-green-600 text-white border-4 border-yellow-300 animate-wiggle shadow-rainbow">
                 TRIES: {attempts} 🎯
               </Badge>
+              {consecutiveFailures > 0 && (
+                <Badge className="text-xl px-4 py-2 bg-red-600 text-white border-4 border-orange-300 animate-bounce shadow-rainbow">
+                  FAILS: {consecutiveFailures}/3 ⚠️
+                </Badge>
+              )}
               <Button
                 onClick={() => {
                   playButtonSound();
@@ -254,6 +354,24 @@ export const GameBoard = () => {
             </Button>
           </div>
         </Card>
+
+        {/* LEARNING MODE DISPLAY */}
+        {showingCorrectAnswer && (
+          <Card className="p-12 bg-gradient-to-br from-blue-600 to-purple-700 text-white shadow-rainbow animate-pulse border-8 border-double border-cyan-300">
+            <div className="text-center space-y-6">
+              <div className="text-8xl animate-bounce">📚🎯📚</div>
+              <h2 className="text-5xl font-bold animate-pulse text-cyan-100">
+                🌟 LEARNING TIME! 🌟
+              </h2>
+              <p className="text-2xl font-bold text-white">
+                📖 Study this perfect match! 📖
+              </p>
+              <div className="text-xl text-cyan-100">
+                This will reset automatically in 5 seconds... ⏰
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* MEGA SUCCESS CELEBRATION */}
         {isMatched && isCorrect && (
