@@ -30,6 +30,7 @@ export const SlotMachine = ({
 }: SlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Debug logging for options
   React.useEffect(() => {
@@ -52,6 +53,7 @@ export const SlotMachine = ({
   const handleSpin = () => {
     if (isSpinning || options.length === 0 || !isEnabled) return;
     
+    setHasInteracted(true);
     console.log(`SlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
     setIsSpinning(true);
@@ -81,6 +83,7 @@ export const SlotMachine = ({
   const handleManualSelect = (direction: 'up' | 'down') => {
     if (isSpinning || options.length === 0 || !isEnabled) return;
     
+    setHasInteracted(true);
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
@@ -157,15 +160,17 @@ export const SlotMachine = ({
                 ${isSpinning ? 'animate-bounce-crazy text-4xl' : 'animate-pulse'}
                 ${selectedValue && isEnabled ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
-                {!isEnabled ? (
-                  <span className="text-gray-400 text-sm">Wait...</span>
-                ) : isSpinning ? '🎰✨🎲' : (
-                  <span className="drop-shadow-sm font-extrabold">
-                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
-                      ? options[currentIndex] 
-                      : '---'}
-                  </span>
-                )}
+                 {!isEnabled ? (
+                   <span className="text-gray-400 text-sm">...</span>
+                 ) : isSpinning ? '🎰✨🎲' : !hasInteracted ? (
+                   <span className="text-gray-400 text-sm">---</span>
+                 ) : (
+                   <span className="drop-shadow-sm font-extrabold">
+                     {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                       ? options[currentIndex] 
+                       : '---'}
+                   </span>
+                 )}
               </div>
             </div>
           </div>

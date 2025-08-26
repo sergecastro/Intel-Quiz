@@ -31,6 +31,7 @@ export const FlagSlotMachine = ({
 }: FlagSlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Debug logging for options
   React.useEffect(() => {
@@ -53,6 +54,7 @@ export const FlagSlotMachine = ({
   const handleSpin = () => {
     if (isSpinning || options.length === 0 || !isEnabled) return;
     
+    setHasInteracted(true);
     console.log(`FlagSlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
     setIsSpinning(true);
@@ -82,6 +84,7 @@ export const FlagSlotMachine = ({
   const handleManualSelect = (direction: 'up' | 'down') => {
     if (isSpinning || options.length === 0 || !isEnabled) return;
     
+    setHasInteracted(true);
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
@@ -165,24 +168,26 @@ export const FlagSlotMachine = ({
                 ${isSpinning ? 'animate-bounce-crazy' : 'animate-pulse'}
                 ${selectedValue ? 'bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
-                {isSpinning ? (
-                  <div className="text-5xl">🎰✨🎲</div>
-                ) : !isEnabled ? (
-                  <div></div>
-                ) : getCurrentFlagImage() ? (
-                  <img 
-                    src={getCurrentFlagImage()} 
-                    alt={options.length > 0 && currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : 'Flag'}
-                    className="w-20 h-14 object-cover rounded-lg border-4 border-purple-400 shadow-lg transform hover:scale-105 transition-transform"
-                  />
-                ) : (
-                  <span className={`text-xl font-black drop-shadow-sm ${selectedValue ? 'text-white' : 'text-purple-900'}`}>
-                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
-                      ? options[currentIndex] 
-                      : 'ERROR'
-                    }
-                  </span>
-                )}
+                 {isSpinning ? (
+                   <div className="text-5xl">🎰✨🎲</div>
+                 ) : !isEnabled ? (
+                   <span className="text-gray-400 text-sm">...</span>
+                 ) : !hasInteracted ? (
+                   <span className="text-gray-400 text-sm">---</span>
+                 ) : getCurrentFlagImage() ? (
+                   <img 
+                     src={getCurrentFlagImage()} 
+                     alt={options.length > 0 && currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : 'Flag'}
+                     className="w-20 h-14 object-cover rounded-lg border-4 border-purple-400 shadow-lg transform hover:scale-105 transition-transform"
+                   />
+                 ) : (
+                   <span className={`text-xl font-black drop-shadow-sm ${selectedValue ? 'text-white' : 'text-purple-900'}`}>
+                     {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                       ? options[currentIndex] 
+                       : 'ERROR'
+                     }
+                   </span>
+                 )}
               </div>
             </div>
           </div>
