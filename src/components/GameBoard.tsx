@@ -1,3 +1,4 @@
+import { celebrateWin } from '../utils/celebration';
 import { useState, useEffect, useRef } from 'react';
 import { SlotMachine } from './SlotMachine';
 import { FlagSlotMachine } from './FlagSlotMachine';
