@@ -39,15 +39,20 @@ export const GameBoard = () => {
   const { toast } = useToast();
   const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
 
-  // Enhanced Text-to-Speech function with queue to prevent overlapping
+  // Enhanced Text-to-Speech function with queue and error handling
   const speakText = async (text: string) => {
+    console.log(`speakText called with: "${text}"`);
+    
     if (isSpeaking) {
+      console.log('Already speaking, adding to queue');
       // Add to queue if already speaking
       speechQueueRef.current.push(text);
       return;
     }
 
     setIsSpeaking(true);
+    console.log('Starting speech synthesis...');
+    
     try {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: { text }
@@ -55,12 +60,15 @@ export const GameBoard = () => {
 
       if (error) {
         console.log('Voice synthesis error:', error);
+        // Fallback: try browser speech synthesis
+        fallbackToWebSpeech(text);
         setIsSpeaking(false);
         processNextSpeech();
         return;
       }
 
       if (data?.audioContent) {
+        console.log('Audio content received, playing...');
         // Convert base64 to audio blob and play
         const binaryString = atob(data.audioContent);
         const bytes = new Uint8Array(binaryString.length);
@@ -72,22 +80,58 @@ export const GameBoard = () => {
         const audio = new Audio(audioUrl);
         
         audio.onended = () => {
+          console.log('Audio playback ended');
           setIsSpeaking(false);
           // Process next speech in queue after a short delay
           setTimeout(() => processNextSpeech(), 500);
         };
         
-        audio.onerror = () => {
+        audio.onerror = (e) => {
+          console.log('Audio playback error:', e);
+          fallbackToWebSpeech(text);
           setIsSpeaking(false);
           processNextSpeech();
         };
         
         await audio.play();
+      } else {
+        console.log('No audio content received, using fallback');
+        fallbackToWebSpeech(text);
+        setIsSpeaking(false);
+        processNextSpeech();
       }
     } catch (error) {
       console.log('Voice synthesis not available:', error);
+      fallbackToWebSpeech(text);
       setIsSpeaking(false);
       processNextSpeech();
+    }
+  };
+
+  // Fallback to browser Web Speech API
+  const fallbackToWebSpeech = (text: string) => {
+    console.log('Using Web Speech API fallback for:', text);
+    
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.8;
+      utterance.pitch = 1.2;
+      utterance.volume = 0.9;
+      
+      utterance.onend = () => {
+        console.log('Web Speech playback ended');
+        setTimeout(() => processNextSpeech(), 300);
+      };
+      
+      utterance.onerror = () => {
+        console.log('Web Speech error, continuing anyway');
+        setTimeout(() => processNextSpeech(), 300);
+      };
+      
+      speechSynthesis.speak(utterance);
+    } else {
+      console.log('No speech synthesis available');
+      setTimeout(() => processNextSpeech(), 300);
     }
   };
 
@@ -166,13 +210,14 @@ export const GameBoard = () => {
       
       // Set debounced timer - only the latest selection will trigger feedback
       const newTimer = setTimeout(() => {
+        console.log(`Timer fired for ${category} = ${value}`);
         setIsTimerActive(false);
         // Double-check this is still the latest selection
         if (latestSelectionRef.current?.category === category && latestSelectionRef.current?.value === value) {
           console.log(`Providing feedback for final selection: ${category} = ${value}`);
           provideFeedback(category, value, newSelections);
         } else {
-          console.log(`Skipping feedback - newer selection detected`);
+          console.log(`Skipping feedback - newer selection detected. Latest:`, latestSelectionRef.current);
         }
       }, 6000);
       
@@ -185,23 +230,37 @@ export const GameBoard = () => {
   };
 
   const provideFeedback = (category: CategoryKey, value: string, currentSelections: Selections) => {
+    console.log(`provideFeedback called: category=${category}, value=${value}, selections=`, currentSelections);
+    
     // Rule 1 & 2: Don't speak until country is chosen
     if (category !== 'country' && !currentSelections.country) {
+      console.log('No country selected yet, skipping feedback');
       return;
     }
 
     if (category === 'country') {
+      console.log(`Country selected: ${value} - enabling all categories and speaking`);
       // Reset failures when new country is chosen
       setCategoryFailures({});
       // Enable all other categories when country is selected
       setEnabledCategories(new Set(categoryOrder));
-      speakText(`${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`);
+      console.log('Enabled categories updated to all categories');
+      
+      // Ensure speech happens
+      const message = `${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`;
+      console.log(`Speaking: ${message}`);
+      speakText(message);
       return;
     }
 
+    console.log(`Providing feedback for ${category}: ${value}`);
+    
     // For other categories, check if choice is correct for selected country
     const correctMatch = gameMatches.find(match => match.country === currentSelections.country);
-    if (!correctMatch) return;
+    if (!correctMatch) {
+      console.log('No correct match found for country:', currentSelections.country);
+      return;
+    }
 
     const isCorrect = correctMatch[category] === value;
     const nextCategoryIndex = categoryOrder.indexOf(category) + 1;
@@ -217,6 +276,7 @@ export const GameBoard = () => {
       } else {
         message += ` ALL DONE! CHECK YOUR MATCH!`;
       }
+      console.log(`Speaking success message: ${message}`);
       speakText(message);
     } else {
       // Track failures for this category
@@ -226,10 +286,14 @@ export const GameBoard = () => {
       if (currentFailures >= 3) {
         // After 3 failures, reveal the correct answer
         const correctValue = correctMatch[category];
-        speakText(`NO! AFTER THREE TRIES, THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()} IS ${correctValue?.toUpperCase()}! TRY AGAIN!`);
+        const message = `NO! AFTER THREE TRIES, THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()} IS ${correctValue?.toUpperCase()}! TRY AGAIN!`;
+        console.log(`Speaking failure message (3 tries): ${message}`);
+        speakText(message);
       } else {
         // Don't reveal answer, just say it's wrong
-        speakText(`NO! ${value.toUpperCase()} IS NOT THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}! PLEASE TRY AGAIN!`);
+        const message = `NO! ${value.toUpperCase()} IS NOT THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}! PLEASE TRY AGAIN!`;
+        console.log(`Speaking failure message: ${message}`);
+        speakText(message);
       }
     }
   };
