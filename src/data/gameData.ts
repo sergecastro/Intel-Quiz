@@ -133,12 +133,12 @@ export const gameMatches: GameMatch[] = [
 ];
 
 export const categories = {
-  country: gameMatches.map(match => match.country),
-  capital: gameMatches.map(match => match.capital),
-  language: gameMatches.map(match => match.language),
-  currency: gameMatches.map(match => match.currency),
-  continent: gameMatches.map(match => match.continent),
-  flag: gameMatches.map(match => match.flag)
+  country: [...new Set(gameMatches.map(match => match.country))],
+  capital: [...new Set(gameMatches.map(match => match.capital))],
+  language: [...new Set(gameMatches.map(match => match.language))],
+  currency: [...new Set(gameMatches.map(match => match.currency))],
+  continent: [...new Set(gameMatches.map(match => match.continent))],
+  flag: [...new Set(gameMatches.map(match => match.flag))]
 };
 
 export const categoryNames = {
