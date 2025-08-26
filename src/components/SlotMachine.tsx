@@ -11,6 +11,7 @@ interface SlotMachineProps {
   onSelectionChange: (value: string) => void;
   isMatched: boolean;
   isCorrect?: boolean;
+  isEnabled?: boolean;
   audio?: {
     playSpinSound: () => void;
     playSelectSound: () => void;
@@ -24,6 +25,7 @@ export const SlotMachine = ({
   onSelectionChange,
   isMatched,
   isCorrect,
+  isEnabled = true,
   audio
 }: SlotMachineProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -157,10 +159,11 @@ export const SlotMachine = ({
               `}>
                 {isSpinning ? '🎰✨🎲' : (
                   <span className="drop-shadow-sm font-extrabold">
-                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
-                      ? options[currentIndex] 
-                      : 'ERROR'
-                    }
+                    {!isEnabled ? '' : (
+                      options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                        ? options[currentIndex] 
+                        : 'ERROR'
+                    )}
                   </span>
                 )}
               </div>

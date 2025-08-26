@@ -477,6 +477,8 @@ export const GameBoard = () => {
     setIsCorrect(false);
     // Reset enabled categories to only country
     setEnabledCategories(new Set(['country']));
+    // Reset welcome message so it shows again
+    setHasWelcomed(false);
   };
 
   const resetAll = () => {
@@ -575,6 +577,7 @@ export const GameBoard = () => {
                     audio={{ playSpinSound, playSelectSound }}
                     isMatched={isMatched}
                     isCorrect={isCorrect}
+                    isEnabled={isEnabled}
                   />
                 </div>
               );
@@ -589,6 +592,7 @@ export const GameBoard = () => {
                   audio={{ playSpinSound, playSelectSound }}
                   isMatched={isMatched}
                   isCorrect={isCorrect}
+                  isEnabled={isEnabled}
                 />
               </div>
             );
