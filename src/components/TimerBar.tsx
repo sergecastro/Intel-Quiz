@@ -4,10 +4,10 @@ import { Card } from '@/components/ui/card';
 interface TimerBarProps {
   isActive: boolean;
   onTimeUp: () => void;
-  duration?: number; // in milliseconds, default 3000
+  duration?: number; // in milliseconds, default 6000
 }
 
-export const TimerBar = ({ isActive, onTimeUp, duration = 3000 }: TimerBarProps) => {
+export const TimerBar = ({ isActive, onTimeUp, duration = 6000 }: TimerBarProps) => {
   const [progress, setProgress] = useState(0);
   const [isTimeUp, setIsTimeUp] = useState(false);
 

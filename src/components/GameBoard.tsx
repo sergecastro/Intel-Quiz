@@ -127,11 +127,11 @@ export const GameBoard = () => {
       // Start visual timer
       setIsTimerActive(true);
       
-      // Set new timer to speak after 3 seconds pause for better detection
+      // Set new timer to speak after 6 seconds pause for better detection
       const newTimer = setTimeout(() => {
         setIsTimerActive(false);
         provideFeedback(category, value, newSelections);
-      }, 3000);
+      }, 6000);
       setSpeechTimer(newTimer);
       
       return newSelections;
@@ -443,7 +443,7 @@ export const GameBoard = () => {
         <TimerBar 
           isActive={isTimerActive}
           onTimeUp={() => setIsTimerActive(false)}
-          duration={3000}
+          duration={6000}
         />
 
         {/* Game Grid */}
