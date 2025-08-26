@@ -341,9 +341,15 @@ export const GameBoard = () => {
       setIsCorrect(true);
       setScore(prev => prev + 1);
       setConsecutiveFailures(0);  // Reset failures on success
+      // 🌟 Champagne + confetti + sounds overlay
+      celebrateWin({
+       title: `Celebrate ${match.country}! 🎉`,
+       sub: `Great job — everything matches ${match.country}.`,
+       // flag: `/assets/flags/${match.country.toLowerCase()}.svg`, // optional, add if your flags use this path
+      });
       
       // Play success sound and speak celebration
-      playSuccessSound();
+     // playSuccessSound();
       speakText(`PERFECT! ${match.country} WINS!`);
       
       // Show country celebration popup after speech
