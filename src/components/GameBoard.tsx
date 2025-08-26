@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { SlotMachine } from './SlotMachine';
 import { FlagSlotMachine } from './FlagSlotMachine';
 import { TimerBar } from './TimerBar';
+import { CountryCelebration } from './CountryCelebration';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +38,8 @@ export const GameBoard = () => {
   const [consecutiveFailures, setConsecutiveFailures] = useState(0);
   const [showingCorrectAnswer, setShowingCorrectAnswer] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationCountry, setCelebrationCountry] = useState<string>('');
   const speechQueueRef = useRef<string[]>([]);
   
   const { toast } = useToast();
@@ -340,18 +343,26 @@ export const GameBoard = () => {
       
       // Play success sound and speak celebration
       playSuccessSound();
-      speakText(`Perfect match! ${match.country} is absolutely correct!`);
+      speakText(`Perfect match! ${match.country} is absolutely correct! Let's celebrate and learn about this amazing country!`);
       
-      // Play country music celebration - wait for speech to finish first
+      // Show country celebration popup after speech
+      setTimeout(() => {
+        setCelebrationCountry(match.country);
+        setShowCelebration(true);
+      }, 3000);
+      
+      // Play extended country children's song celebration 
       setTimeout(() => {
         playCountryMusic(match.country);
-        // Play it again for celebration
-        setTimeout(() => playCountryMusic(match.country), 5000);
+        // Play it again for extended celebration
+        setTimeout(() => playCountryMusic(match.country), 8000);
+        // And one more time for triple celebration!
+        setTimeout(() => playCountryMusic(match.country), 16000);
       }, 4000);
       
       toast({
         title: "🎉 INCREDIBLE MATCH! 🎉",
-        description: `🌟 AMAZING! You matched ${match.country} perfectly! 🎵 Listen to their beautiful music! 🎶`,
+        description: `🌟 AMAZING! You matched ${match.country} perfectly! 🎵 Listen to their beautiful children's song! 🎶`,
         variant: "default"
       });
     } else {
@@ -686,6 +697,13 @@ export const GameBoard = () => {
             </div>
           </Card>
         )}
+        
+        {/* Country Celebration Popup */}
+        <CountryCelebration 
+          country={celebrationCountry}
+          isOpen={showCelebration}
+          onClose={() => setShowCelebration(false)}
+        />
       </div>
     </div>
   );

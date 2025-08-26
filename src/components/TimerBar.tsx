@@ -50,65 +50,21 @@ export const TimerBar = ({ isActive, onTimeUp, duration = 6000 }: TimerBarProps)
     return () => clearInterval(timer);
   }, [isActive, duration, onTimeUp]);
 
-  if (!isActive && progress === 0) {
-    return null;
-  }
-
+  // Always show timer space to prevent screen jumping
   return (
-    <Card className="mx-4 mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 shadow-lg">
-      <div className="text-center mb-3">
-        <h3 className="text-lg font-bold text-blue-800 animate-pulse">
-          ⏰ Decision Time Counter ⏰
-        </h3>
-        <p className="text-sm text-blue-600">
-          {isTimeUp ? "Time's up! Voice feedback activated!" : "Make your choice before the timer fills up!"}
-        </p>
-      </div>
-      
-      {/* Glass tube container */}
-      <div className="relative h-8 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full border-4 border-gray-300 shadow-inner overflow-hidden">
-        {/* Reflective glass effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/20 rounded-full pointer-events-none" />
-        
-        {/* Liquid fill */}
+    <div className="mx-4 mb-2">
+      {/* Minimal thin progress bar - always present */}
+      <div className="relative h-1 bg-gray-100 rounded-full overflow-hidden">
         <div 
           className={`absolute left-0 top-0 h-full rounded-full transition-all duration-75 ease-linear ${
+            !isActive ? 'bg-transparent' :
             isTimeUp 
-              ? 'bg-gradient-to-r from-red-500 via-red-600 to-red-700 shadow-lg shadow-red-500/50' 
-              : 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 shadow-lg shadow-blue-500/30'
+              ? 'bg-gradient-to-r from-red-500 to-red-600' 
+              : 'bg-gradient-to-r from-blue-400 to-blue-500'
           }`}
-          style={{ width: `${progress}%` }}
+          style={{ width: `${isActive ? progress : 0}%` }}
         />
-        
-        {/* Animated bubbles effect */}
-        <div className="absolute inset-0 overflow-hidden rounded-full">
-          <div className={`absolute top-1 left-2 w-2 h-2 rounded-full animate-bounce ${
-            isTimeUp ? 'bg-red-200' : 'bg-blue-200'
-          } opacity-60`} style={{ animationDelay: '0s' }} />
-          <div className={`absolute top-2 right-4 w-1 h-1 rounded-full animate-bounce ${
-            isTimeUp ? 'bg-red-300' : 'bg-blue-300'
-          } opacity-80`} style={{ animationDelay: '0.5s' }} />
-          <div className={`absolute bottom-1 left-1/3 w-1.5 h-1.5 rounded-full animate-bounce ${
-            isTimeUp ? 'bg-red-100' : 'bg-blue-100'
-          } opacity-70`} style={{ animationDelay: '1s' }} />
-        </div>
-        
-        {/* Progress percentage text */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-bold text-white drop-shadow-lg">
-            {Math.round(progress)}%
-          </span>
-        </div>
       </div>
-      
-      {/* Timer status indicator */}
-      <div className="text-center mt-2">
-        {isTimeUp ? (
-          <span className="text-red-600 font-bold animate-pulse">🔴 SPEAKING NOW!</span>
-        ) : (
-          <span className="text-blue-600 font-semibold">🔵 Thinking time...</span>
-        )}
-      </div>
-    </Card>
+    </div>
   );
 };

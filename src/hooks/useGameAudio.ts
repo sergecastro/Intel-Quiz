@@ -21,20 +21,20 @@ const createBeepSound = (frequency: number, duration: number, volume: number = 0
   oscillator.stop(audioContext.currentTime + duration);
 };
 
-// EPIC COUNTRY MUSIC MELODIES - FULL SONGS FOR KIDS!
+// EPIC CHILDREN'S SONGS FROM EACH COUNTRY - ORIGINAL MELODIES FOR KIDS!
 const countryMelodies: { [key: string]: number[] } = {
-  'Australia': [392, 440, 523, 587, 523, 440, 392, 330, 392, 440, 523, 587, 659, 587, 523], // Waltzing Matilda full
-  'Brazil': [523, 587, 659, 698, 784, 698, 659, 587, 523, 587, 659, 698, 784, 880, 784], // Samba carnival
-  'France': [523, 494, 440, 392, 440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440], // La Marseillaise epic
-  'Germany': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 587, 659, 698, 784], // Ode to Joy full
-  'India': [440, 494, 523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440], // Raga journey
-  'Japan': [523, 440, 392, 349, 392, 440, 523, 587, 523, 440, 392, 349, 330, 349, 392], // Sakura complete
-  'Mexico': [659, 784, 880, 784, 659, 587, 523, 659, 784, 880, 1047, 880, 784, 659, 587], // Mariachi fiesta
-  'Russia': [392, 440, 523, 587, 659, 587, 523, 440, 392, 349, 392, 440, 523, 587, 659], // Kalinka dance
-  'Canada': [523, 587, 659, 698, 784, 698, 659, 587, 523, 494, 440, 494, 523, 587, 659], // O Canada proud
-  'Egypt': [440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440, 392, 440, 494, 523], // Pharaoh's melody
-  'Thailand': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440, 494, 523], // Thai temple
-  'South Africa': [392, 440, 523, 587, 659, 698, 784, 698, 659, 587, 523, 440, 392, 349, 392] // Ubuntu rhythm
+  'Australia': [392, 440, 523, 587, 523, 440, 392, 330, 392, 440, 523, 587, 659, 587, 523, 440, 392, 330, 392, 523], // Waltzing Matilda inspired (extended)
+  'Brazil': [523, 587, 659, 698, 784, 698, 659, 587, 523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 587], // Samba carnival dance (extended)
+  'France': [523, 494, 440, 392, 440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440, 392, 349, 392, 440, 523], // French folk song (extended)
+  'Germany': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 587, 659, 698, 784, 880, 1047, 880, 784, 698], // Ode to Joy inspired (extended)
+  'India': [440, 494, 523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440, 392, 440, 523, 587, 659], // Classical raga journey (extended)
+  'Japan': [523, 440, 392, 349, 392, 440, 523, 587, 523, 440, 392, 349, 330, 349, 392, 440, 523, 587, 659, 523], // Sakura blossom song (extended)
+  'Mexico': [659, 784, 880, 784, 659, 587, 523, 659, 784, 880, 1047, 880, 784, 659, 587, 523, 659, 784, 880, 1047], // Mariachi celebration (extended)
+  'Russia': [392, 440, 523, 587, 659, 587, 523, 440, 392, 349, 392, 440, 523, 587, 659, 698, 659, 587, 523, 440], // Folk dance song (extended)
+  'Canada': [523, 587, 659, 698, 784, 698, 659, 587, 523, 494, 440, 494, 523, 587, 659, 698, 784, 880, 784, 698], // Maple country song (extended)
+  'Egypt': [440, 494, 523, 587, 659, 698, 659, 587, 523, 494, 440, 392, 440, 494, 523, 587, 659, 698, 784, 659], // Ancient melody (extended)
+  'Thailand': [523, 587, 659, 698, 784, 880, 784, 698, 659, 587, 523, 494, 440, 494, 523, 587, 659, 698, 784, 880], // Temple bells song (extended)
+  'South Africa': [392, 440, 523, 587, 659, 698, 784, 698, 659, 587, 523, 440, 392, 349, 392, 440, 523, 587, 659, 698] // Ubuntu rhythm song (extended)
 };
 
 const createEpicSpinSound = () => {
