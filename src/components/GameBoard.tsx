@@ -231,15 +231,15 @@ export const GameBoard = () => {
     }
 
     if (category === 'country') {
-      console.log(`Country selected: ${value} - enabling all categories and speaking`);
+      console.log(`Country selected: ${value} - enabling capital category and speaking`);
       // Reset failures when new country is chosen
       setCategoryFailures({});
-      // Enable all other categories when country is selected
-      setEnabledCategories(new Set(categoryOrder));
-      console.log('Enabled categories updated to all categories');
+      // Enable only the next category (capital) when country is selected
+      setEnabledCategories(new Set(['country', 'capital']));
+      console.log('Enabled categories updated to country and capital only');
       
       // Ensure speech happens
-      const message = `${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`;
+      const message = `${value.toUpperCase()} IS THE COUNTRY! NOW CHOOSE THE CAPITAL CITY!`;
       console.log(`Speaking: ${message}`);
       speakText(message);
       return;
@@ -261,6 +261,15 @@ export const GameBoard = () => {
     if (isCorrect) {
       // Reset failures for this category on success
       setCategoryFailures(prev => ({ ...prev, [category]: 0 }));
+      
+      // Enable the next category when current one is correct
+      if (nextCategory) {
+        const currentEnabledArray = Array.from(enabledCategories);
+        currentEnabledArray.push(nextCategory);
+        setEnabledCategories(new Set(currentEnabledArray));
+        console.log(`Enabled next category: ${nextCategory}`);
+      }
+      
       let message = `BRAVO! ${value.toUpperCase()} IS CORRECT FOR ${currentSelections.country?.toUpperCase()}!`;
       if (nextCategory) {
         const nextCategoryName = categoryNames[nextCategory];
