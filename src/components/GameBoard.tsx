@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { SlotMachine } from './SlotMachine';
 import { FlagSlotMachine } from './FlagSlotMachine';
+import { TimerBar } from './TimerBar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -107,6 +108,7 @@ export const GameBoard = () => {
   const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
   const [isSpeaking, setIsSpeaking] = useState(false);
   const speechQueueRef = useRef<string[]>([]);
+  const [isTimerActive, setIsTimerActive] = useState(false);
 
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
@@ -122,8 +124,12 @@ export const GameBoard = () => {
         clearTimeout(speechTimer);
       }
       
+      // Start visual timer
+      setIsTimerActive(true);
+      
       // Set new timer to speak after 3 seconds pause for better detection
       const newTimer = setTimeout(() => {
+        setIsTimerActive(false);
         provideFeedback(category, value, newSelections);
       }, 3000);
       setSpeechTimer(newTimer);
@@ -432,6 +438,13 @@ export const GameBoard = () => {
             </div>
           </div>
         </Card>
+
+        {/* Timer Bar */}
+        <TimerBar 
+          isActive={isTimerActive}
+          onTimeUp={() => setIsTimerActive(false)}
+          duration={3000}
+        />
 
         {/* Game Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
