@@ -51,22 +51,40 @@ function fireConfetti() {
   const canvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
   if (!confettiCreator) confettiCreator = (window as any).confetti.create(canvas, { resize:true, useWorker:true });
   const burst = (ratio:number, opts:any) => confettiCreator(Object.assign({origin:{y:0.6},spread:70,startVelocity:52,decay:0.92,scalar:1.0,ticks:220}, opts, {particleCount:Math.floor(300*ratio)}));
-  burst(0.25,{spread:26,startVelocity:55}); burst(0.2,{spread:60}); burst(0.35,{spread:100,decay:0.91,scalar:1.1}); burst(0.1,{spread:120,startVelocity:35}); burst(0.1,{spread:140,scalar:1.2});
-  const end = Date.now()+1200; (function frame(){ confettiCreator({particleCount:4,angle:60,spread:55,origin:{x:0}}); confettiCreator({particleCount:4,angle:120,spread:55,origin:{x:1}}); if(Date.now()<end) requestAnimationFrame(frame); })();
+  burst(0.25,{spread:26,startVelocity:55});
+  burst(0.2,{spread:60});
+  burst(0.35,{spread:100,decay:0.91,scalar:1.1});
+  burst(0.1,{spread:120,startVelocity:35});
+  burst(0.1,{spread:140,scalar:1.2});
+  const end = Date.now()+1200;
+  (function frame(){
+    confettiCreator({particleCount:4,angle:60,spread:55,origin:{x:0}});
+    confettiCreator({particleCount:4,angle:120,spread:55,origin:{x:1}});
+    if(Date.now()<end) requestAnimationFrame(frame);
+  })();
 }
 
 export function celebrateWin(opts: CelebrateOpts = {}) {
-  ensureStyles(); ensureDom();
+  ensureStyles();
+  ensureDom();
+
   (document.getElementById('celebration-title') as HTMLElement).textContent = opts.title || 'You did it!';
   (document.getElementById('celebration-sub') as HTMLElement).textContent = opts.sub || 'Perfect match!';
+
   const flagEl = document.getElementById('celebration-flag') as HTMLImageElement;
   if (opts.flag) { flagEl.src = opts.flag; flagEl.style.display='block'; flagEl.alt='Flag'; } else { flagEl.style.display='none'; }
+
   try { new (window as any).Howl({ src:['/assets/audio/pop.mp3'], volume:0.7 }).play(); } catch {}
   setTimeout(()=>{ try { new (window as any).Howl({ src:['/assets/audio/win.mp3'], volume:0.6 }).play(); } catch {} },120);
+
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
   const animEl = document.getElementById('champagne-anim') as HTMLElement;
-  lottieInstance = (window as any).lottie.loadAnimation({ container:animEl, renderer:'svg', loop:false, autoplay:true, path:'/assets/anim/champagne.json' });
-  fireConfetti(); overlayEl!.classList.add('show');
+  lottieInstance = (window as any).lottie.loadAnimation({
+    container:animEl, renderer:'svg', loop:false, autoplay:true, path:'/assets/anim/champagne.json'
+  });
+
+  fireConfetti();
+  overlayEl!.classList.add('show');
 }
 
 export function hide() {
@@ -74,4 +92,3 @@ export function hide() {
   overlayEl.classList.remove('show');
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
 }
-
