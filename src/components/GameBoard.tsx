@@ -200,17 +200,11 @@ export const GameBoard = () => {
         feedbackTimerRef.current = null;
       }
       
-      // Clear speech timer
-      if (speechTimer) {
-        clearTimeout(speechTimer);
-        setSpeechTimer(null);
-      }
-      
       // Start visual timer
       setIsTimerActive(true);
       
       // Set debounced timer - only the latest selection will trigger feedback  
-      const newTimer = setTimeout(() => {
+      feedbackTimerRef.current = setTimeout(() => {
         console.log(`Timer fired for ${category} = ${value}`);
         setIsTimerActive(false);
         // Double-check this is still the latest selection
@@ -221,9 +215,6 @@ export const GameBoard = () => {
           console.log(`Skipping feedback - newer selection detected. Latest:`, latestSelectionRef.current);
         }
       }, 800);
-      
-      setSpeechTimer(newTimer);
-      feedbackTimerRef.current = newTimer;
       
       return newSelections;
     });
