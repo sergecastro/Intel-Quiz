@@ -74,8 +74,9 @@ export function celebrateWin(opts: CelebrateOpts = {}) {
   const flagEl = document.getElementById('celebration-flag') as HTMLImageElement;
   if (opts.flag) { flagEl.src = opts.flag; flagEl.style.display='block'; flagEl.alt='Flag'; } else { flagEl.style.display='none'; }
 
-  try { new (window as any).Howl({ src:['/assets/audio/pop.mp3'], volume:0.7 }).play(); } catch {}
-  setTimeout(()=>{ try { new (window as any).Howl({ src:['/assets/audio/win.mp3'], volume:0.6 }).play(); } catch {} },120);
+  try { new (window as any).Howl({ src:['assets/audio/pop.mp3'], volume:0.7 }).play(); } catch {}
+  setTimeout(()=>{ try { new (window as any).Howl({ src:['assets/audio/win.mp3'], volume:0.6 }).play(); } catch {} },120);
+  path:'assets/anim/champagne.json'
 
   if (lottieInstance) { lottieInstance.destroy(); lottieInstance = null; }
   const animEl = document.getElementById('champagne-anim') as HTMLElement;
