@@ -109,6 +109,18 @@ export const GameBoard = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const speechQueueRef = useRef<string[]>([]);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [enabledCategories, setEnabledCategories] = useState<Set<CategoryKey>>(new Set(['country']));
+  const [hasWelcomed, setHasWelcomed] = useState(false);
+
+  // Welcome message on component mount
+  useEffect(() => {
+    if (!hasWelcomed) {
+      setTimeout(() => {
+        speakText("WELCOME TO GEOGRAPHY MATCHING GAME! PLEASE CHOOSE THE COUNTRY FIRST!");
+        setHasWelcomed(true);
+      }, 1000);
+    }
+  }, [hasWelcomed]);
 
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
@@ -148,6 +160,8 @@ export const GameBoard = () => {
     if (category === 'country') {
       // Reset failures when new country is chosen
       setCategoryFailures({});
+      // Enable all other categories when country is selected
+      setEnabledCategories(new Set(categoryOrder));
       speakText(`${value.toUpperCase()} IS THE COUNTRY! CHOOSE THE NEXT CHOICES NOW!`);
       return;
     }
@@ -372,6 +386,8 @@ export const GameBoard = () => {
     });
     setIsMatched(false);
     setIsCorrect(false);
+    // Reset enabled categories to only country
+    setEnabledCategories(new Set(['country']));
   };
 
   const resetAll = () => {
@@ -449,10 +465,27 @@ export const GameBoard = () => {
         {/* Game Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categoryOrder.map((categoryKey) => {
+            const isEnabled = enabledCategories.has(categoryKey);
+            const containerClass = !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
+            
             if (categoryKey === 'flag') {
               return (
-                <FlagSlotMachine
-                  key={categoryKey}
+                <div key={categoryKey} className={containerClass}>
+                  <FlagSlotMachine
+                    category={categoryNames[categoryKey]}
+                    options={categories[categoryKey]}
+                    selectedValue={selections[categoryKey]}
+                    onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                    audio={{ playSpinSound, playSelectSound }}
+                    isMatched={isMatched}
+                    isCorrect={isCorrect}
+                  />
+                </div>
+              );
+            }
+            return (
+              <div key={categoryKey} className={containerClass}>
+                <SlotMachine
                   category={categoryNames[categoryKey]}
                   options={categories[categoryKey]}
                   selectedValue={selections[categoryKey]}
@@ -461,19 +494,7 @@ export const GameBoard = () => {
                   isMatched={isMatched}
                   isCorrect={isCorrect}
                 />
-              );
-            }
-            return (
-              <SlotMachine
-                key={categoryKey}
-                category={categoryNames[categoryKey]}
-                options={categories[categoryKey]}
-                selectedValue={selections[categoryKey]}
-                onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
-                audio={{ playSpinSound, playSelectSound }}
-                isMatched={isMatched}
-                isCorrect={isCorrect}
-              />
+              </div>
             );
           })}
         </div>
@@ -530,17 +551,28 @@ export const GameBoard = () => {
 
         {/* MEGA SUCCESS CELEBRATION */}
         {isMatched && isCorrect && (
-          <Card className="p-12 bg-gradient-rainbow text-white shadow-rainbow animate-bounce-crazy border-8 border-double border-yellow-300">
-            <div className="text-center space-y-6">
+          <Card className="p-12 bg-gradient-rainbow text-white shadow-rainbow animate-bounce-crazy border-8 border-double border-yellow-300 relative overflow-hidden">
+            {/* Firework effects */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-4 left-4 text-6xl animate-bounce">🎆</div>
+              <div className="absolute top-4 right-4 text-6xl animate-bounce" style={{animationDelay: '0.5s'}}>🎇</div>
+              <div className="absolute bottom-4 left-4 text-6xl animate-bounce" style={{animationDelay: '1s'}}>✨</div>
+              <div className="absolute bottom-4 right-4 text-6xl animate-bounce" style={{animationDelay: '1.5s'}}>🌟</div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl animate-pulse">💥</div>
+            </div>
+            
+            <div className="text-center space-y-6 relative z-10">
               <div className="text-9xl animate-disco-ball">🎉🏆🎉</div>
-              <h2 className="text-6xl font-bold animate-rainbow-text animate-wiggle">
+              <h2 className="text-6xl font-bold animate-rainbow-text animate-wiggle bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
                 🌟 SPECTACULAR VICTORY! 🌟
               </h2>
-              <p className="text-3xl font-bold text-yellow-100 animate-bounce-crazy">
-                🎵 LISTEN TO THE COUNTRY'S MUSIC! 🎵
+              <div className="text-7xl animate-pulse">🎊🎈🎊</div>
+              <p className="text-4xl font-bold text-yellow-100 animate-bounce-crazy bg-red-600/30 px-6 py-3 rounded-full border-4 border-yellow-300">
+                🎵 ENJOY THE COUNTRY'S BEAUTIFUL MUSIC! 🎵
               </p>
-              <div className="text-2xl text-white/90 animate-pulse">
-                Get ready for the next amazing adventure in 3 seconds! ✨
+              <div className="text-5xl animate-wiggle">⭐🌈⭐</div>
+              <div className="text-2xl text-white/90 animate-pulse bg-green-600/30 px-4 py-2 rounded-lg">
+                New adventure starts in 3 seconds! Get ready! ✨
               </div>
             </div>
           </Card>
