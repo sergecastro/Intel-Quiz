@@ -50,7 +50,7 @@ export const SlotMachine = ({
   }, [selectedValue, options, category]); // Removed currentIndex from deps to prevent loops
 
   const handleSpin = () => {
-    if (isSpinning || options.length === 0) return;
+    if (isSpinning || options.length === 0 || !isEnabled) return;
     
     console.log(`SlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
@@ -72,14 +72,14 @@ export const SlotMachine = ({
       setCurrentIndex(safeIndex);
       setIsSpinning(false);
       audio?.playSelectSound();
-      if (options[safeIndex]) {
+      if (options[safeIndex] && isEnabled) {
         onSelectionChange(options[safeIndex]);
       }
     }, spinDuration);
   };
 
   const handleManualSelect = (direction: 'up' | 'down') => {
-    if (isSpinning || options.length === 0) return;
+    if (isSpinning || options.length === 0 || !isEnabled) return;
     
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
@@ -89,7 +89,7 @@ export const SlotMachine = ({
     const safeIndex = Math.max(0, Math.min(newIndex, options.length - 1));
     console.log(`SlotMachine ${category} - Manual select ${direction}: index ${currentIndex} -> ${safeIndex}, value "${options[safeIndex]}"`);
     setCurrentIndex(safeIndex);
-    if (options[safeIndex]) {
+    if (options[safeIndex] && isEnabled) {
       onSelectionChange(options[safeIndex]);
     }
   };
