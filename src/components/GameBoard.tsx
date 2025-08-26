@@ -36,6 +36,9 @@ export const GameBoard = () => {
   const [attempts, setAttempts] = useState(0);
   const [consecutiveFailures, setConsecutiveFailures] = useState(0);
   const [showingCorrectAnswer, setShowingCorrectAnswer] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const speechQueueRef = useRef<string[]>([]);
+  
   const { toast } = useToast();
   const { playButtonSound, playSuccessSound, playErrorSound, playWinChime, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
 
@@ -150,8 +153,6 @@ export const GameBoard = () => {
   // Enhanced state management for robust selection handling
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
   const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const speechQueueRef = useRef<string[]>([]);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [enabledCategories, setEnabledCategories] = useState<Set<CategoryKey>>(new Set(['country']));
   const [hasWelcomed, setHasWelcomed] = useState(false);
