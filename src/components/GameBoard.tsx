@@ -103,7 +103,7 @@ export const GameBoard = () => {
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
 
-  // Speech delay timer and failure tracking
+  // Enhanced state management for robust selection handling
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
   const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -111,6 +111,8 @@ export const GameBoard = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [enabledCategories, setEnabledCategories] = useState<Set<CategoryKey>>(new Set(['country']));
   const [hasWelcomed, setHasWelcomed] = useState(false);
+  const latestSelectionRef = useRef<{category: CategoryKey, value: string} | null>(null);
+  const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Welcome message on component mount
   useEffect(() => {
@@ -122,8 +124,24 @@ export const GameBoard = () => {
     }
   }, [hasWelcomed]);
 
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (speechTimer) {
+        clearTimeout(speechTimer);
+      }
+      if (feedbackTimerRef.current) {
+        clearTimeout(feedbackTimerRef.current);
+      }
+    };
+  }, [speechTimer]);
+
   const handleSelectionChange = (category: CategoryKey, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
+    
+    // Store the latest selection for debouncing
+    latestSelectionRef.current = { category, value };
+    
     setSelections(prev => {
       const newSelections = {
         ...prev,
@@ -131,20 +149,35 @@ export const GameBoard = () => {
       };
       console.log('New selections after update:', newSelections);
       
-      // Clear any existing speech timer
+      // Clear any existing feedback timer to prevent overlapping calls
+      if (feedbackTimerRef.current) {
+        clearTimeout(feedbackTimerRef.current);
+        feedbackTimerRef.current = null;
+      }
+      
+      // Clear speech timer
       if (speechTimer) {
         clearTimeout(speechTimer);
+        setSpeechTimer(null);
       }
       
       // Start visual timer
       setIsTimerActive(true);
       
-      // Set new timer to speak after 6 seconds pause for better detection
+      // Set debounced timer - only the latest selection will trigger feedback
       const newTimer = setTimeout(() => {
         setIsTimerActive(false);
-        provideFeedback(category, value, newSelections);
+        // Double-check this is still the latest selection
+        if (latestSelectionRef.current?.category === category && latestSelectionRef.current?.value === value) {
+          console.log(`Providing feedback for final selection: ${category} = ${value}`);
+          provideFeedback(category, value, newSelections);
+        } else {
+          console.log(`Skipping feedback - newer selection detected`);
+        }
       }, 6000);
+      
       setSpeechTimer(newTimer);
+      feedbackTimerRef.current = newTimer;
       
       return newSelections;
     });
@@ -467,13 +500,20 @@ export const GameBoard = () => {
           {categoryOrder.map((categoryKey) => {
             const isEnabled = enabledCategories.has(categoryKey);
             const containerClass = !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
+            const categoryOptions = categories[categoryKey] || []; // Defensive programming
+            
+            // Skip rendering if no options available
+            if (categoryOptions.length === 0) {
+              console.warn(`No options available for category: ${categoryKey}`);
+              return null;
+            }
             
             if (categoryKey === 'flag') {
               return (
                 <div key={categoryKey} className={containerClass}>
                   <FlagSlotMachine
                     category={categoryNames[categoryKey]}
-                    options={categories[categoryKey]}
+                    options={categoryOptions}
                     selectedValue={selections[categoryKey]}
                     onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
                     audio={{ playSpinSound, playSelectSound }}
@@ -487,7 +527,7 @@ export const GameBoard = () => {
               <div key={categoryKey} className={containerClass}>
                 <SlotMachine
                   category={categoryNames[categoryKey]}
-                  options={categories[categoryKey]}
+                  options={categoryOptions}
                   selectedValue={selections[categoryKey]}
                   onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
                   audio={{ playSpinSound, playSelectSound }}

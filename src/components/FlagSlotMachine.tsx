@@ -30,47 +30,67 @@ export const FlagSlotMachine = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
 
-  // Sync currentIndex with selectedValue
+  // Debug logging for options
   React.useEffect(() => {
-    if (selectedValue) {
+    console.log(`FlagSlotMachine ${category} - Options:`, options);
+    console.log(`FlagSlotMachine ${category} - Selected:`, selectedValue);
+    console.log(`FlagSlotMachine ${category} - Current Index:`, currentIndex);
+  }, [options, selectedValue, currentIndex, category]);
+
+  // Robust sync currentIndex with selectedValue
+  React.useEffect(() => {
+    if (selectedValue && options.length > 0) {
       const index = options.findIndex(option => option === selectedValue);
-      if (index !== -1) {
+      if (index !== -1 && index !== currentIndex) {
+        console.log(`FlagSlotMachine ${category} - Syncing index from ${currentIndex} to ${index} for value "${selectedValue}"`);
         setCurrentIndex(index);
       }
     }
-  }, [selectedValue, options]);
+  }, [selectedValue, options, category]); // Removed currentIndex from deps to prevent loops
 
   const handleSpin = () => {
-    if (isSpinning) return;
+    if (isSpinning || options.length === 0) return;
     
+    console.log(`FlagSlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
     setIsSpinning(true);
     const spinDuration = 1000 + Math.random() * 1000; // 1-2 seconds
     const finalIndex = Math.floor(Math.random() * options.length);
     
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % options.length);
+      setCurrentIndex(prev => {
+        const newIndex = (prev + 1) % options.length;
+        return Math.max(0, Math.min(newIndex, options.length - 1)); // Ensure bounds
+      });
     }, 100);
     
     setTimeout(() => {
       clearInterval(interval);
-      setCurrentIndex(finalIndex);
+      const safeIndex = Math.max(0, Math.min(finalIndex, options.length - 1));
+      console.log(`FlagSlotMachine ${category} - Spin result: index ${safeIndex}, value "${options[safeIndex]}"`);
+      setCurrentIndex(safeIndex);
       setIsSpinning(false);
       audio?.playSelectSound();
-      onSelectionChange(options[finalIndex]);
+      if (options[safeIndex]) {
+        onSelectionChange(options[safeIndex]);
+      }
     }, spinDuration);
   };
 
   const handleManualSelect = (direction: 'up' | 'down') => {
-    if (isSpinning) return;
+    if (isSpinning || options.length === 0) return;
     
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
       : (currentIndex + 1) % options.length;
     
-    setCurrentIndex(newIndex);
-    onSelectionChange(options[newIndex]);
+    const safeIndex = Math.max(0, Math.min(newIndex, options.length - 1));
+    console.log(`FlagSlotMachine ${category} - Manual select ${direction}: index ${currentIndex} -> ${safeIndex}, value "${options[safeIndex]}"`);
+    setCurrentIndex(safeIndex);
+    if (options[safeIndex]) {
+      onSelectionChange(options[safeIndex]);
+    }
   };
 
   const getCardStyle = () => {
@@ -85,6 +105,7 @@ export const FlagSlotMachine = ({
   };
 
   const getCurrentFlagImage = () => {
+    if (options.length === 0 || currentIndex < 0 || currentIndex >= options.length) return null;
     const currentOption = options[currentIndex];
     const gameMatch = gameMatches.find(match => match.flag === currentOption);
     return gameMatch?.flagImage;
@@ -145,12 +166,15 @@ export const FlagSlotMachine = ({
                 ) : getCurrentFlagImage() ? (
                   <img 
                     src={getCurrentFlagImage()} 
-                    alt={options[currentIndex]}
+                    alt={options.length > 0 && currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : 'Flag'}
                     className="w-20 h-14 object-cover rounded-lg border-4 border-purple-400 shadow-lg transform hover:scale-105 transition-transform"
                   />
                 ) : (
                   <span className={`text-xl font-black drop-shadow-sm ${selectedValue ? 'text-white' : 'text-purple-900'}`}>
-                    {options[currentIndex]}
+                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                      ? options[currentIndex] 
+                      : 'ERROR'
+                    }
                   </span>
                 )}
               </div>

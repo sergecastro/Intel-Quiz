@@ -29,47 +29,67 @@ export const SlotMachine = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
 
-  // Sync currentIndex with selectedValue
+  // Debug logging for options
   React.useEffect(() => {
-    if (selectedValue) {
+    console.log(`SlotMachine ${category} - Options:`, options);
+    console.log(`SlotMachine ${category} - Selected:`, selectedValue);
+    console.log(`SlotMachine ${category} - Current Index:`, currentIndex);
+  }, [options, selectedValue, currentIndex, category]);
+
+  // Robust sync currentIndex with selectedValue
+  React.useEffect(() => {
+    if (selectedValue && options.length > 0) {
       const index = options.findIndex(option => option === selectedValue);
-      if (index !== -1) {
+      if (index !== -1 && index !== currentIndex) {
+        console.log(`SlotMachine ${category} - Syncing index from ${currentIndex} to ${index} for value "${selectedValue}"`);
         setCurrentIndex(index);
       }
     }
-  }, [selectedValue, options]);
+  }, [selectedValue, options, category]); // Removed currentIndex from deps to prevent loops
 
   const handleSpin = () => {
-    if (isSpinning) return;
+    if (isSpinning || options.length === 0) return;
     
+    console.log(`SlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
     setIsSpinning(true);
     const spinDuration = 1000 + Math.random() * 1000; // 1-2 seconds
     const finalIndex = Math.floor(Math.random() * options.length);
     
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % options.length);
+      setCurrentIndex(prev => {
+        const newIndex = (prev + 1) % options.length;
+        return Math.max(0, Math.min(newIndex, options.length - 1)); // Ensure bounds
+      });
     }, 100);
     
     setTimeout(() => {
       clearInterval(interval);
-      setCurrentIndex(finalIndex);
+      const safeIndex = Math.max(0, Math.min(finalIndex, options.length - 1));
+      console.log(`SlotMachine ${category} - Spin result: index ${safeIndex}, value "${options[safeIndex]}"`);
+      setCurrentIndex(safeIndex);
       setIsSpinning(false);
       audio?.playSelectSound();
-      onSelectionChange(options[finalIndex]);
+      if (options[safeIndex]) {
+        onSelectionChange(options[safeIndex]);
+      }
     }, spinDuration);
   };
 
   const handleManualSelect = (direction: 'up' | 'down') => {
-    if (isSpinning) return;
+    if (isSpinning || options.length === 0) return;
     
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
       ? (currentIndex - 1 + options.length) % options.length
       : (currentIndex + 1) % options.length;
     
-    setCurrentIndex(newIndex);
-    onSelectionChange(options[newIndex]);
+    const safeIndex = Math.max(0, Math.min(newIndex, options.length - 1));
+    console.log(`SlotMachine ${category} - Manual select ${direction}: index ${currentIndex} -> ${safeIndex}, value "${options[safeIndex]}"`);
+    setCurrentIndex(safeIndex);
+    if (options[safeIndex]) {
+      onSelectionChange(options[safeIndex]);
+    }
   };
 
   const getCardStyle = () => {
@@ -135,7 +155,10 @@ export const SlotMachine = ({
               `}>
                 {isSpinning ? '🎰✨🎲' : (
                   <span className="drop-shadow-sm font-extrabold">
-                    {options[currentIndex]}
+                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                      ? options[currentIndex] 
+                      : 'ERROR'
+                    }
                   </span>
                 )}
               </div>
