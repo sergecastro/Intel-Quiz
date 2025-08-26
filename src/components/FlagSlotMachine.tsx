@@ -51,7 +51,7 @@ export const FlagSlotMachine = ({
   }, [selectedValue, options, category]); // Removed currentIndex from deps to prevent loops
 
   const handleSpin = () => {
-    if (isSpinning || options.length === 0) return;
+    if (isSpinning || options.length === 0 || !isEnabled) return;
     
     console.log(`FlagSlotMachine ${category} - Spinning with ${options.length} options`);
     audio?.playSpinSound();
@@ -73,14 +73,14 @@ export const FlagSlotMachine = ({
       setCurrentIndex(safeIndex);
       setIsSpinning(false);
       audio?.playSelectSound();
-      if (options[safeIndex]) {
+      if (options[safeIndex] && isEnabled) {
         onSelectionChange(options[safeIndex]);
       }
     }, spinDuration);
   };
 
   const handleManualSelect = (direction: 'up' | 'down') => {
-    if (isSpinning || options.length === 0) return;
+    if (isSpinning || options.length === 0 || !isEnabled) return;
     
     audio?.playSelectSound();
     const newIndex = direction === 'up' 
@@ -90,7 +90,7 @@ export const FlagSlotMachine = ({
     const safeIndex = Math.max(0, Math.min(newIndex, options.length - 1));
     console.log(`FlagSlotMachine ${category} - Manual select ${direction}: index ${currentIndex} -> ${safeIndex}, value "${options[safeIndex]}"`);
     setCurrentIndex(safeIndex);
-    if (options[safeIndex]) {
+    if (options[safeIndex] && isEnabled) {
       onSelectionChange(options[safeIndex]);
     }
   };
@@ -144,7 +144,7 @@ export const FlagSlotMachine = ({
               variant="ghost"
               size="sm"
               onClick={() => handleManualSelect('up')}
-              disabled={isSpinning}
+              disabled={isSpinning || !isEnabled}
               className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
@@ -192,7 +192,7 @@ export const FlagSlotMachine = ({
               variant="ghost"
               size="sm"
               onClick={() => handleManualSelect('down')}
-              disabled={isSpinning}
+              disabled={isSpinning || !isEnabled}
               className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
@@ -203,7 +203,7 @@ export const FlagSlotMachine = ({
         {/* MEGA SPIN BUTTON */}
         <Button
           onClick={handleSpin}
-          disabled={isSpinning}
+          disabled={isSpinning || !isEnabled}
           className="w-full h-12 text-lg font-black transition-all duration-300 hover:scale-110 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
           data-spin-button="true"
         >

@@ -136,7 +136,7 @@ export const SlotMachine = ({
               variant="ghost"
               size="sm"
               onClick={() => handleManualSelect('up')}
-              disabled={isSpinning}
+              disabled={isSpinning || !isEnabled}
               className="transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
@@ -155,15 +155,15 @@ export const SlotMachine = ({
                <div className={`
                 text-xl font-black px-4 py-2 rounded-lg transition-all duration-300 text-center min-h-[3rem] flex items-center justify-center w-full
                 ${isSpinning ? 'animate-bounce-crazy text-4xl' : 'animate-pulse'}
-                ${selectedValue ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
+                ${selectedValue && isEnabled ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
-                {isSpinning ? '🎰✨🎲' : (
+                {!isEnabled ? (
+                  <span className="text-gray-400 text-sm">Wait...</span>
+                ) : isSpinning ? '🎰✨🎲' : (
                   <span className="drop-shadow-sm font-extrabold">
-                    {!isEnabled ? '' : (
-                      options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
-                        ? options[currentIndex] 
-                        : 'ERROR'
-                    )}
+                    {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                      ? options[currentIndex] 
+                      : '---'}
                   </span>
                 )}
               </div>
@@ -175,7 +175,7 @@ export const SlotMachine = ({
               variant="ghost"
               size="sm"
               onClick={() => handleManualSelect('down')}
-              disabled={isSpinning}
+              disabled={isSpinning || !isEnabled}
               className="transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
@@ -186,7 +186,7 @@ export const SlotMachine = ({
         {/* MEGA SPIN BUTTON */}
         <Button
           onClick={handleSpin}
-          disabled={isSpinning}
+          disabled={isSpinning || !isEnabled}
           className="w-full h-12 text-lg font-black transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
           data-spin-button="true"
         >
