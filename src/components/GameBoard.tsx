@@ -217,7 +217,7 @@ export const GameBoard = () => {
         } else {
           console.log(`Skipping feedback - newer selection detected. Latest:`, latestSelectionRef.current);
         }
-      }, 5000);
+      }, 4000);
       
       return newSelections;
     });
@@ -242,7 +242,7 @@ export const GameBoard = () => {
       console.log('Enabled categories updated to country and capital only');
       
       // Ensure speech happens
-      const message = `${value.toUpperCase()} IS THE COUNTRY! NOW CHOOSE THE CAPITAL CITY!`;
+      const message = `${value.toUpperCase()}! NOW CHOOSE CAPITAL!`;
       console.log(`Speaking: ${message}`);
       speakText(message);
       return;
@@ -273,12 +273,12 @@ export const GameBoard = () => {
         console.log(`Enabled next category: ${nextCategory}`);
       }
       
-      let message = `BRAVO! ${value.toUpperCase()} IS CORRECT FOR ${currentSelections.country?.toUpperCase()}!`;
+      let message = `CORRECT! ${value.toUpperCase()}!`;
       if (nextCategory) {
         const nextCategoryName = categoryNames[nextCategory];
-        message += ` NOW CHOOSE THE ${nextCategoryName.toUpperCase()}!`;
+        message += ` NOW ${nextCategoryName.toUpperCase()}!`;
       } else {
-        message += ` ALL DONE! CHECK YOUR MATCH!`;
+        message += ` CHECK MATCH!`;
       }
       console.log(`Speaking success message: ${message}`);
       speakText(message);
@@ -290,12 +290,12 @@ export const GameBoard = () => {
       if (currentFailures >= 3) {
         // After 3 failures, reveal the correct answer
         const correctValue = correctMatch[category];
-        const message = `NO! AFTER THREE TRIES, THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()} IS ${correctValue?.toUpperCase()}! TRY AGAIN!`;
+        const message = `NO! CORRECT ${categoryNames[category].toUpperCase()} IS ${correctValue?.toUpperCase()}!`;
         console.log(`Speaking failure message (3 tries): ${message}`);
         speakText(message);
       } else {
         // Don't reveal answer, just say it's wrong
-        const message = `NO! ${value.toUpperCase()} IS NOT THE CORRECT ${categoryNames[category].toUpperCase()} FOR ${currentSelections.country?.toUpperCase()}! PLEASE TRY AGAIN!`;
+        const message = `NO! ${value.toUpperCase()} WRONG! TRY AGAIN!`;
         console.log(`Speaking failure message: ${message}`);
         speakText(message);
       }
@@ -343,7 +343,7 @@ export const GameBoard = () => {
       
       // Play success sound and speak celebration
       playSuccessSound();
-      speakText(`Perfect match! ${match.country} is absolutely correct! Let's celebrate and learn about this amazing country!`);
+      speakText(`PERFECT! ${match.country} WINS!`);
       
       // Show country celebration popup after speech
       setTimeout(() => {
