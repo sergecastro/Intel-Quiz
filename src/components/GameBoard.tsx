@@ -341,7 +341,7 @@ export const GameBoard = () => {
       setIsCorrect(true);
       setScore(prev => prev + 1);
       setConsecutiveFailures(0);  // Reset failures on success
-      // 🌟 Champagne + confetti + sounds overlay
+      // 🌟 champagne + confetti + sounds overlay
       celebrateWin({
        title: `Celebrate ${match.country}! 🎉`,
        sub: `Great job — everything matches ${match.country}.`,
