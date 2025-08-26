@@ -209,7 +209,7 @@ export const GameBoard = () => {
       // Start visual timer
       setIsTimerActive(true);
       
-      // Set debounced timer - only the latest selection will trigger feedback
+      // Set debounced timer - only the latest selection will trigger feedback  
       const newTimer = setTimeout(() => {
         console.log(`Timer fired for ${category} = ${value}`);
         setIsTimerActive(false);
@@ -220,7 +220,7 @@ export const GameBoard = () => {
         } else {
           console.log(`Skipping feedback - newer selection detected. Latest:`, latestSelectionRef.current);
         }
-      }, 6000);
+      }, 800);
       
       setSpeechTimer(newTimer);
       feedbackTimerRef.current = newTimer;
