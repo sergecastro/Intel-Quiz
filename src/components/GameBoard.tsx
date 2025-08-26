@@ -214,7 +214,7 @@ export const GameBoard = () => {
         } else {
           console.log(`Skipping feedback - newer selection detected. Latest:`, latestSelectionRef.current);
         }
-      }, 800);
+      }, 5000);
       
       return newSelections;
     });

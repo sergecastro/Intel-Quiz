@@ -107,7 +107,7 @@ export const SlotMachine = ({
     <Card className={`relative p-4 transition-all duration-500 ${getCardStyle()} 
       border-6 border-double overflow-hidden animate-pulse-rainbow
       before:absolute before:inset-0 before:bg-gradient-rainbow before:opacity-20 before:rounded-lg before:animate-rainbow-shift
-      shadow-rainbow hover:shadow-electric transform hover:scale-110 hover:animate-wiggle`}>
+      shadow-rainbow hover:shadow-electric`}>
       
       {/* MAGICAL CORNER GEMS */}
       <div className="absolute top-2 left-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-disco-ball shadow-glow"></div>
@@ -133,7 +133,7 @@ export const SlotMachine = ({
               size="sm"
               onClick={() => handleManualSelect('up')}
               disabled={isSpinning}
-              className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
+              className="transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronUp className="h-6 w-6 text-purple-900 font-black drop-shadow-sm" strokeWidth={4} />
             </Button>
@@ -171,7 +171,7 @@ export const SlotMachine = ({
               size="sm"
               onClick={() => handleManualSelect('down')}
               disabled={isSpinning}
-              className="hover:scale-125 transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
+              className="transition-all duration-300 z-20 h-10 w-10 p-1 bg-gradient-to-b from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 hover:animate-bounce-crazy rounded-full border-4 border-white shadow-lg flex items-center justify-center"
             >
               <ChevronDown className="h-6 w-6 text-white font-black drop-shadow-sm" strokeWidth={4} />
             </Button>
@@ -182,7 +182,7 @@ export const SlotMachine = ({
         <Button
           onClick={handleSpin}
           disabled={isSpinning}
-          className="w-full h-12 text-lg font-black transition-all duration-300 hover:scale-110 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
+          className="w-full h-12 text-lg font-black transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white border-4 border-yellow-300 shadow-rainbow animate-pulse-rainbow"
           data-spin-button="true"
         >
           {isSpinning ? '🎰✨🎰' : '🎲 SPIN! 🎲'}
