@@ -410,6 +410,22 @@ export const GameBoard = () => {
     if (!correctMatch) {
       console.log(`No correct match found for leading item: ${leadingValue}`);
       console.log(`Available matches:`, matches.map(m => m[categoryOrder[0]]));
+      
+      // Enable next category even if no match found to prevent freeze
+      const nextCategoryIndex = categoryOrder.indexOf(category) + 1;
+      const nextCategoryInLevel = activeCategoriesForLevel[nextCategoryIndex];
+      
+      if (nextCategoryInLevel) {
+        const enabledCats = new Set(enabledCategories);
+        enabledCats.add(nextCategoryInLevel);
+        setEnabledCategories(enabledCats);
+        console.log(`No match found - enabling next category: ${nextCategoryInLevel}`);
+      }
+      
+      // Play error sound and give generic feedback
+      playErrorSound();
+      const message = "SORRY, THAT COMBINATION DOESN'T MATCH OUR DATA. TRY ANOTHER SELECTION!";
+      speakText(message);
       return;
     }
 
