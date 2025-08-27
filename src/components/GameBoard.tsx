@@ -242,10 +242,15 @@ export const GameBoard = () => {
   
   // Level-based active categories
   const getLevelCategories = (currentLevel: number): string[] => {
-    return subjectData.levels[currentLevel] || Object.keys(subjectData.categories).slice(0, 3);
+    console.log(`Getting level categories for ${currentSubject} level ${currentLevel}`);
+    console.log(`Available levels:`, subjectData.levels);
+    const result = subjectData.levels[currentLevel] || Object.keys(subjectData.categories).slice(0, 3);
+    console.log(`Result:`, result);
+    return result;
   };
   
   const activeCategoriesForLevel = getLevelCategories(level);
+  console.log(`Active categories for ${currentSubject} level ${level}:`, activeCategoriesForLevel);
 
   // Enhanced state management for robust selection handling
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
