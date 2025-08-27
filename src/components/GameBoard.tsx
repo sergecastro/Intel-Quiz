@@ -120,22 +120,92 @@ export const GameBoard = () => {
     console.log('Using Web Speech API fallback for:', text);
     
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 1.2;
-      utterance.volume = 0.9;
+      // iOS Safari detection and special handling
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
       
-      utterance.onend = () => {
-        console.log('Web Speech playback ended');
-        setTimeout(() => processNextSpeech(), 300);
-      };
+      // Cancel any existing speech to avoid conflicts
+      window.speechSynthesis.cancel();
       
-      utterance.onerror = () => {
-        console.log('Web Speech error, continuing anyway');
-        setTimeout(() => processNextSpeech(), 300);
-      };
+      // iOS needs a delay after canceling and voice loading
+      const delay = isIOS ? 200 : 50;
       
-      speechSynthesis.speak(utterance);
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.8;
+        utterance.pitch = 1.2;
+        utterance.volume = 1.0; // Max volume for iOS
+        utterance.lang = 'en-US';
+        
+        // iOS-specific voice selection for better compatibility
+        if (isIOS || isSafari) {
+          const setVoiceAndSpeak = () => {
+            const voices = window.speechSynthesis.getVoices();
+            console.log('Available voices:', voices.map(v => v.name));
+            
+            // Prefer enhanced or high-quality English voices on iOS
+            let selectedVoice = voices.find(voice => 
+              voice.lang.includes('en') && (
+                voice.name.includes('Enhanced') ||
+                voice.name.includes('Premium') ||
+                voice.name.includes('Samantha') ||
+                voice.name.includes('Alex')
+              )
+            );
+            
+            // Fallback to any English voice
+            if (!selectedVoice) {
+              selectedVoice = voices.find(voice => voice.lang.includes('en'));
+            }
+            
+            if (selectedVoice) {
+              utterance.voice = selectedVoice;
+              console.log('Selected voice:', selectedVoice.name);
+            }
+            
+            utterance.onend = () => {
+              console.log('Web Speech playback ended');
+              setTimeout(() => processNextSpeech(), 300);
+            };
+            
+            utterance.onerror = (event) => {
+              console.log('Web Speech error:', event.error, 'continuing anyway');
+              setTimeout(() => processNextSpeech(), 300);
+            };
+            
+            // Ensure speechSynthesis is ready before speaking
+            try {
+              window.speechSynthesis.speak(utterance);
+            } catch (error) {
+              console.log('Speech synthesis error:', error);
+              setTimeout(() => processNextSpeech(), 300);
+            }
+          };
+          
+          // Wait for voices to be loaded on iOS
+          if (window.speechSynthesis.getVoices().length === 0) {
+            window.speechSynthesis.onvoiceschanged = () => {
+              window.speechSynthesis.onvoiceschanged = null;
+              setVoiceAndSpeak();
+            };
+          } else {
+            setVoiceAndSpeak();
+          }
+        } else {
+          // Non-iOS devices
+          utterance.onend = () => {
+            console.log('Web Speech playback ended');
+            setTimeout(() => processNextSpeech(), 300);
+          };
+          
+          utterance.onerror = (event) => {
+            console.log('Web Speech error:', event.error, 'continuing anyway');
+            setTimeout(() => processNextSpeech(), 300);
+          };
+          
+          window.speechSynthesis.speak(utterance);
+        }
+      }, delay);
     } else {
       console.log('No speech synthesis available');
       setTimeout(() => processNextSpeech(), 300);
