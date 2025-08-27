@@ -789,7 +789,7 @@ export const GameBoard = () => {
 
         {/* SUPER ACTION BUTTONS */}
         <Card className="p-6 bg-gradient-magical border-4 border-double border-yellow-400 shadow-rainbow">
-          <div className="flex gap-3 justify-center items-center flex-wrap">
+          <div className="flex gap-3 justify-center items-center">
             {/* Level buttons */}
             {[1, 2, 3].map(levelNum => (
               <Button
@@ -809,22 +809,10 @@ export const GameBoard = () => {
               </Button>
             ))}
             
-            {/* Fixed-width container for action buttons to prevent jumping */}
-            <div className="flex gap-3 min-w-[300px] justify-center">
-              {/* Only show CHECK MATCH when ALL required slots are filled AND not matched yet */}
-              {(() => {
-                const filledCategories = activeCategoriesForLevel.filter(cat => 
-                  selections[cat] && selections[cat] !== null && selections[cat] !== ""
-                );
-                const allFilled = filledCategories.length === activeCategoriesForLevel.length;
-                console.log(`Level ${level}: ${filledCategories.length}/${activeCategoriesForLevel.length} categories filled`, {
-                  activeCategoriesForLevel,
-                  filledCategories,
-                  selections: activeCategoriesForLevel.map(cat => ({[cat]: selections[cat]}))
-                });
-                
-                return allFilled && !isMatched;
-              })() && (
+            {/* Fixed container with consistent width to prevent jumping */}
+            <div className="flex gap-3 w-[400px] justify-center items-center">
+              {/* Check if all required categories are filled for current level */}
+              {activeCategoriesForLevel.every(cat => selections[cat] && selections[cat].trim() !== "") && !isMatched ? (
                 <Button
                   onClick={checkMatch}
                   className="bg-gradient-success text-white text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
@@ -832,6 +820,8 @@ export const GameBoard = () => {
                   <Sparkles className="h-5 w-5 mr-2 animate-disco-ball" />
                   ✨ CHECK MATCH! ✨
                 </Button>
+              ) : (
+                <div className="w-[200px]"></div>
               )}
               
               <Button
