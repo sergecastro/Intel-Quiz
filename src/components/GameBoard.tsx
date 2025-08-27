@@ -418,9 +418,15 @@ export const GameBoard = () => {
       playErrorSound();
       
       if (currentFailures >= 3) {
-        // After 3 failures, suggest to try different leading item
-        const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
-        speakText(message);
+        if (category === categoryOrder[0]) {
+          // Only suggest changing leading item if failures are on the leading category
+          const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
+          speakText(message);
+        } else {
+          // For other categories, tell them it doesn't match and suggest trying different options
+          const message = `NO! ${value.toUpperCase()} IS NOT THE CORRECT ${subjectCategoryNames[category].toUpperCase()} FOR ${leadingValue.toUpperCase()}! TRY A DIFFERENT ${subjectCategoryNames[category].toUpperCase()}!`;
+          speakText(message);
+        }
       } else {
         // Give specific feedback that this choice doesn't work with current leading item
         const message = `NO! ${value.toUpperCase()} DOESN'T MATCH ${leadingValue.toUpperCase()}! TRY AGAIN!`;
