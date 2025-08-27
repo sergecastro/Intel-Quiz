@@ -1,7 +1,7 @@
-import { GameBoard } from '@/components/GameBoard';
+import { TorahGameBoard } from '@/components/TorahGameBoard';
 
 const Index = () => {
-  return <GameBoard />;
+  return <TorahGameBoard />;
 };
 
 export default Index;
