@@ -763,24 +763,74 @@ export const GameBoard = () => {
         />
 
 
-        {/* Game Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categoryOrder.map((categoryKey) => {
-            const isActiveInLevel = activeCategoriesForLevel.includes(categoryKey);
-            const isEnabled = enabledCategories.has(categoryKey) && isActiveInLevel;
-            const containerClass = !isActiveInLevel ? "opacity-20 blur-lg pointer-events-none" : !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
-            const categoryOptions = subjectCategories[categoryKey] || []; // Defensive programming
-            
-            // Skip rendering if no options available
-            if (categoryOptions.length === 0) {
-              console.warn(`No options available for category: ${categoryKey}`);
-              return null;
-            }
-            
-            if (categoryKey === 'flag') {
+        {/* Game Grid - Always 9 Slots (6 top + 3 bottom) */}
+        <div className="space-y-4 mb-8">
+          {/* TOP ROW - 6 SLOTS */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {Array.from({ length: 6 }).map((_, index) => {
+              const categoryKey = categoryOrder[index];
+              if (!categoryKey) {
+                // Empty/disabled slot
+                return (
+                  <div key={`empty-top-${index}`} className="opacity-20 blur-lg pointer-events-none">
+                    <SlotMachine
+                      category="---"
+                      options={[]}
+                      selectedValue={null}
+                      onSelectionChange={() => {}}
+                      isMatched={false}
+                      isCorrect={false}
+                      isEnabled={false}
+                    />
+                  </div>
+                );
+              }
+              
+              const isActiveInLevel = activeCategoriesForLevel.includes(categoryKey);
+              const isEnabled = enabledCategories.has(categoryKey) && isActiveInLevel;
+              const containerClass = !isActiveInLevel ? "opacity-20 blur-lg pointer-events-none" : !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
+              const categoryOptions = subjectCategories[categoryKey] || [];
+              
+              // Skip rendering if no options available
+              if (categoryOptions.length === 0) {
+                console.warn(`No options available for category: ${categoryKey}`);
+                return (
+                  <div key={`empty-top-${index}`} className="opacity-20 blur-lg pointer-events-none">
+                    <SlotMachine
+                      category="---"
+                      options={[]}
+                      selectedValue={null}
+                      onSelectionChange={() => {}}
+                      isMatched={false}
+                      isCorrect={false}
+                      isEnabled={false}
+                    />
+                  </div>
+                );
+              }
+              
+              const isMatched = false; // No individual slot matching in this design
+              const isCorrect = false;
+              
+              if (categoryKey === 'flag') {
+                return (
+                  <div key={categoryKey} className={containerClass}>
+                    <FlagSlotMachine
+                      category={subjectCategoryNames[categoryKey]}
+                      options={categoryOptions}
+                      selectedValue={selections[categoryKey]}
+                      onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                      audio={{ playSpinSound, playSelectSound }}
+                      isMatched={isMatched}
+                      isCorrect={isCorrect}
+                      isEnabled={isEnabled}
+                    />
+                  </div>
+                );
+              }
               return (
                 <div key={categoryKey} className={containerClass}>
-                  <FlagSlotMachine
+                  <SlotMachine
                     category={subjectCategoryNames[categoryKey]}
                     options={categoryOptions}
                     selectedValue={selections[categoryKey]}
@@ -792,22 +842,97 @@ export const GameBoard = () => {
                   />
                 </div>
               );
-            }
-            return (
-              <div key={categoryKey} className={containerClass}>
-                <SlotMachine
-                  category={subjectCategoryNames[categoryKey]}
-                  options={categoryOptions}
-                  selectedValue={selections[categoryKey]}
-                  onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
-                  audio={{ playSpinSound, playSelectSound }}
-                  isMatched={isMatched}
-                  isCorrect={isCorrect}
-                  isEnabled={isEnabled}
-                />
-              </div>
-            );
-          })}
+            })}
+          </div>
+          
+          {/* BOTTOM ROW - 3 LARGER SLOTS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {Array.from({ length: 3 }).map((_, index) => {
+              const slotIndex = index + 6;
+              const categoryKey = categoryOrder[slotIndex];
+              if (!categoryKey) {
+                // Empty/disabled slot
+                return (
+                  <div key={`empty-bottom-${index}`} className="opacity-20 blur-lg pointer-events-none">
+                    <div className="transform scale-110">
+                      <SlotMachine
+                        category="---"
+                        options={[]}
+                        selectedValue={null}
+                        onSelectionChange={() => {}}
+                        isMatched={false}
+                        isCorrect={false}
+                        isEnabled={false}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+              
+              const isActiveInLevel = activeCategoriesForLevel.includes(categoryKey);
+              const isEnabled = enabledCategories.has(categoryKey) && isActiveInLevel;
+              const containerClass = !isActiveInLevel ? "opacity-20 blur-lg pointer-events-none" : !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
+              const categoryOptions = subjectCategories[categoryKey] || [];
+              
+              // Skip rendering if no options available
+              if (categoryOptions.length === 0) {
+                console.warn(`No options available for category: ${categoryKey}`);
+                return (
+                  <div key={`empty-bottom-${index}`} className="opacity-20 blur-lg pointer-events-none">
+                    <div className="transform scale-110">
+                      <SlotMachine
+                        category="---"
+                        options={[]}
+                        selectedValue={null}
+                        onSelectionChange={() => {}}
+                        isMatched={false}
+                        isCorrect={false}
+                        isEnabled={false}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+              
+              const isMatched = false; // No individual slot matching in this design
+              const isCorrect = false;
+              
+              if (categoryKey === 'flag') {
+                return (
+                  <div key={categoryKey} className={containerClass}>
+                    <div className="transform scale-110">
+                      <FlagSlotMachine
+                        category={subjectCategoryNames[categoryKey]}
+                        options={categoryOptions}
+                        selectedValue={selections[categoryKey]}
+                        onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                        audio={{ playSpinSound, playSelectSound }}
+                        isMatched={isMatched}
+                        isCorrect={isCorrect}
+                        isEnabled={isEnabled}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={categoryKey} className={containerClass}>
+                  <div className="transform scale-110">
+                    <SlotMachine
+                      category={subjectCategoryNames[categoryKey]}
+                      options={categoryOptions}
+                      selectedValue={selections[categoryKey]}
+                      onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
+                      audio={{ playSpinSound, playSelectSound }}
+                      isMatched={isMatched}
+                      isCorrect={isCorrect}
+                      isEnabled={isEnabled}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* SUPER ACTION BUTTONS */}
