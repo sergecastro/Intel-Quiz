@@ -362,6 +362,8 @@ export const GameBoard = () => {
     
     // Rule 1 & 2: Don't speak until leading category is chosen
     const leadingCategory = categoryOrder[0];
+    console.log(`Leading category for ${currentSubject}: ${leadingCategory}`);
+    
     if (category !== leadingCategory && !currentSelections[leadingCategory]) {
       console.log('No leading category selected yet, skipping feedback');
       return;
@@ -369,7 +371,7 @@ export const GameBoard = () => {
 
     if (category === leadingCategory) {
       console.log(`${leadingCategory} selected: ${value} - enabling next category and speaking`);
-      // Reset failures when new country is chosen
+      // Reset failures when new leading item is chosen
       setCategoryFailures({});
       
       // Enable next category based on level
@@ -395,10 +397,14 @@ export const GameBoard = () => {
 
     console.log(`Providing feedback for ${category}: ${value}`);
     
-    // For other categories, check if choice is correct for selected country
-    const correctMatch = matches.find(match => match[categoryOrder[0]] === currentSelections[categoryOrder[0]]);
+    // For other categories, check if choice is correct for selected leading item
+    const leadingValue = currentSelections[categoryOrder[0]];
+    console.log(`Looking for match with leading item: ${leadingValue}`);
+    
+    const correctMatch = matches.find(match => match[categoryOrder[0]] === leadingValue);
     if (!correctMatch) {
-      console.log('No correct match found for leading item:', currentSelections[categoryOrder[0]]);
+      console.log(`No correct match found for leading item: ${leadingValue}`);
+      console.log(`Available matches:`, matches.map(m => m[categoryOrder[0]]));
       return;
     }
 

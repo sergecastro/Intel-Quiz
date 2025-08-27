@@ -92,6 +92,9 @@ export const biologyMatches = [
 ];
 
 export const biologyCategories = {
+  organism: [
+    'Elephant', 'Penguin', 'Tiger', 'Dolphin', 'Oak Tree', 'Butterfly', 'Shark', 'Honey Bee', 'Kangaroo', 'Eagle'
+  ],
   scientificClassification: [
     'Mammal', 'Bird', 'Fish', 'Insect', 'Plant', 'Reptile', 'Amphibian',
     // Plausible distractors
@@ -143,6 +146,7 @@ export const biologyCategories = {
 };
 
 export const biologyCategoryNames = {
+  organism: 'Organism',
   scientificClassification: 'Scientific Classification',
   habitat: 'Habitat',
   diet: 'Diet',
