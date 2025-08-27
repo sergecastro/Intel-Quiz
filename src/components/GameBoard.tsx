@@ -423,17 +423,10 @@ export const GameBoard = () => {
           const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
           speakText(message);
         } else {
-          // For other categories, provide a correct example from the available matches
-          const firstMatch = matches[0]; // Get the first available match as an example
-          if (firstMatch) {
-            const correctValue = firstMatch[category];
-            const correctLeading = firstMatch[categoryOrder[0]];
-            const message = `NO! FOR EXAMPLE, CORRECT ${subjectCategoryNames[category].toUpperCase()} FOR ${correctLeading.toUpperCase()} IS ${correctValue.toUpperCase()}!`;
-            speakText(message);
-          } else {
-            const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
-            speakText(message);
-          }
+          // This case should not happen if leading character is valid
+          // If we're here, the leading character itself is invalid
+          const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
+          speakText(message);
         }
       } else {
         // Give specific feedback that this choice doesn't work with current leading item
@@ -479,9 +472,9 @@ export const GameBoard = () => {
       setCategoryFailures(prev => ({ ...prev, [category]: currentFailures }));
       
       if (currentFailures >= 3) {
-        // After 3 failures, reveal the correct answer
+        // After 3 failures, reveal the correct answer for THEIR selected character
         const correctValue = correctMatch[category];
-        const message = `NO! CORRECT ${subjectCategoryNames[category].toUpperCase()} IS ${correctValue?.toUpperCase()}!`;
+        const message = `NO! CORRECT ${subjectCategoryNames[category].toUpperCase()} FOR ${leadingValue.toUpperCase()} IS ${correctValue?.toUpperCase()}!`;
         console.log(`Speaking failure message (3 tries): ${message}`);
         speakText(message);
       } else {
