@@ -7,30 +7,37 @@ import { CountryCelebration } from './CountryCelebration';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { gameMatches, categories, categoryNames, type CategoryKey } from '@/data/gameData';
+import { subjects, SubjectKey, AnyCategoryKey } from '@/data/subjects';
+import { SubjectSelector } from './SubjectSelector';
 import { Sparkles, RotateCcw, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useGameAudio } from '@/hooks/useGameAudio';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Selections {
-  country: string | null;
-  capital: string | null;
-  language: string | null;
-  currency: string | null;
-  continent: string | null;
-  flag: string | null;
+  [key: string]: string | null;
 }
 
 export const GameBoard = () => {
-  const [selections, setSelections] = useState<Selections>({
-    country: null,
-    capital: null,
-    language: null,
-    currency: null,
-    continent: null,
-    flag: null
-  });
+  const [currentSubject, setCurrentSubject] = useState<SubjectKey>('geography');
+  const [selections, setSelections] = useState<Selections>({});
+  
+  // Get current subject data
+  const subjectData = subjects[currentSubject];
+  const matches = subjectData.matches;
+  const subjectCategories = subjectData.categories;
+  const subjectCategoryNames = subjectData.categoryNames;
+  
+  // Initialize selections based on current subject
+  useEffect(() => {
+    const initialSelections: Selections = {};
+    Object.keys(subjectData.categories).forEach(key => {
+      initialSelections[key] = null;
+    });
+    setSelections(initialSelections);
+    setEnabledCategories(new Set([Object.keys(subjectData.categories)[0]])); // Enable first category
+    setHasWelcomed(false);
+  }, [currentSubject]);
   
   const [isMatched, setIsMatched] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -231,16 +238,11 @@ export const GameBoard = () => {
     }
   };
 
-  const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
+  const categoryOrder = Object.keys(subjectData.categories);
   
   // Level-based active categories
-  const getLevelCategories = (currentLevel: number): CategoryKey[] => {
-    switch (currentLevel) {
-      case 1: return ['country', 'language', 'continent'];
-      case 2: return ['country', 'capital', 'language', 'continent']; 
-      case 3: return ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
-      default: return ['country', 'language', 'continent'];
-    }
+  const getLevelCategories = (currentLevel: number): string[] => {
+    return subjectData.levels[currentLevel] || Object.keys(subjectData.categories).slice(0, 3);
   };
   
   const activeCategoriesForLevel = getLevelCategories(level);
@@ -249,9 +251,9 @@ export const GameBoard = () => {
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
   const [categoryFailures, setCategoryFailures] = useState<Record<string, number>>({});
   const [isTimerActive, setIsTimerActive] = useState(false);
-  const [enabledCategories, setEnabledCategories] = useState<Set<CategoryKey>>(new Set(['country']));
+  const [enabledCategories, setEnabledCategories] = useState<Set<string>>(new Set([Object.keys(subjectData.categories)[0]]));
   const [hasWelcomed, setHasWelcomed] = useState(false);
-  const latestSelectionRef = useRef<{category: CategoryKey, value: string} | null>(null);
+  const latestSelectionRef = useRef<{category: string, value: string} | null>(null);
   const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Check for iOS on mount and show voice prompt
@@ -278,7 +280,9 @@ export const GameBoard = () => {
       // Welcome message after enabling voice
       setTimeout(() => {
         if (!hasWelcomed) {
-          speakText("WELCOME TO GEOGRAPHY MATCHING GAME! PLEASE CHOOSE THE COUNTRY FIRST!");
+          const firstCategory = Object.keys(subjectData.categories)[0];
+          const firstCategoryName = subjectData.categoryNames[firstCategory];
+          speakText(`WELCOME TO ${subjectData.name.toUpperCase()} MATCHING GAME! PLEASE CHOOSE THE ${firstCategoryName.toUpperCase()} FIRST!`);
           setHasWelcomed(true);
         }
       }, 500);
@@ -293,7 +297,9 @@ export const GameBoard = () => {
   useEffect(() => {
     if (!hasWelcomed && voiceEnabled) {
       setTimeout(() => {
-        speakText("WELCOME TO GEOGRAPHY MATCHING GAME! PLEASE CHOOSE THE COUNTRY FIRST!");
+        const firstCategory = Object.keys(subjectData.categories)[0];
+        const firstCategoryName = subjectData.categoryNames[firstCategory];
+        speakText(`WELCOME TO ${subjectData.name.toUpperCase()} MATCHING GAME! PLEASE CHOOSE THE ${firstCategoryName.toUpperCase()} FIRST!`);
         setHasWelcomed(true);
       }, 1000);
     }
@@ -311,7 +317,7 @@ export const GameBoard = () => {
     };
   }, [speechTimer]);
 
-  const handleSelectionChange = (category: CategoryKey, value: string) => {
+  const handleSelectionChange = (category: string, value: string) => {
     console.log(`handleSelectionChange called: category=${category}, value=${value}`);
     
     // Store the latest selection for debouncing
@@ -351,30 +357,31 @@ export const GameBoard = () => {
     setIsMatched(false);
   };
 
-  const provideFeedback = (category: CategoryKey, value: string, currentSelections: Selections) => {
+  const provideFeedback = (category: string, value: string, currentSelections: Selections) => {
     console.log(`provideFeedback called: category=${category}, value=${value}, selections=`, currentSelections);
     
-    // Rule 1 & 2: Don't speak until country is chosen
-    if (category !== 'country' && !currentSelections.country) {
-      console.log('No country selected yet, skipping feedback');
+    // Rule 1 & 2: Don't speak until leading category is chosen
+    const leadingCategory = categoryOrder[0];
+    if (category !== leadingCategory && !currentSelections[leadingCategory]) {
+      console.log('No leading category selected yet, skipping feedback');
       return;
     }
 
-    if (category === 'country') {
-      console.log(`Country selected: ${value} - enabling capital category and speaking`);
+    if (category === leadingCategory) {
+      console.log(`${leadingCategory} selected: ${value} - enabling next category and speaking`);
       // Reset failures when new country is chosen
       setCategoryFailures({});
       
       // Enable next category based on level
       const nextCategoryInLevel = activeCategoriesForLevel.find(cat => 
-        categoryOrder.indexOf(cat) > categoryOrder.indexOf('country')
+        categoryOrder.indexOf(cat) > categoryOrder.indexOf(leadingCategory)
       );
       
       if (nextCategoryInLevel) {
-        setEnabledCategories(new Set(['country', nextCategoryInLevel]));
-        console.log(`Enabled categories updated to country and ${nextCategoryInLevel}`);
+        setEnabledCategories(new Set([leadingCategory, nextCategoryInLevel]));
+        console.log(`Enabled categories updated to ${leadingCategory} and ${nextCategoryInLevel}`);
         
-        const message = `${value.toUpperCase()}! NOW CHOOSE ${categoryNames[nextCategoryInLevel].toUpperCase()}!`;
+        const message = `${value.toUpperCase()}! NOW CHOOSE ${subjectCategoryNames[nextCategoryInLevel].toUpperCase()}!`;
         console.log(`Speaking: ${message}`);
         speakText(message);
       } else {
@@ -389,9 +396,9 @@ export const GameBoard = () => {
     console.log(`Providing feedback for ${category}: ${value}`);
     
     // For other categories, check if choice is correct for selected country
-    const correctMatch = gameMatches.find(match => match.country === currentSelections.country);
+    const correctMatch = matches.find(match => match[categoryOrder[0]] === currentSelections[categoryOrder[0]]);
     if (!correctMatch) {
-      console.log('No correct match found for country:', currentSelections.country);
+      console.log('No correct match found for leading item:', currentSelections[categoryOrder[0]]);
       return;
     }
 
@@ -416,7 +423,7 @@ export const GameBoard = () => {
           return newSet;
         });
         
-        let message = `CORRECT! ${value.toUpperCase()}! NOW ${categoryNames[nextCategoryInLevel].toUpperCase()}!`;
+        let message = `CORRECT! ${value.toUpperCase()}! NOW ${subjectCategoryNames[nextCategoryInLevel].toUpperCase()}!`;
         console.log(`Speaking success message: ${message}`);
         speakText(message);
       } else {
@@ -433,7 +440,7 @@ export const GameBoard = () => {
       if (currentFailures >= 3) {
         // After 3 failures, reveal the correct answer
         const correctValue = correctMatch[category];
-        const message = `NO! CORRECT ${categoryNames[category].toUpperCase()} IS ${correctValue?.toUpperCase()}!`;
+        const message = `NO! CORRECT ${subjectCategoryNames[category].toUpperCase()} IS ${correctValue?.toUpperCase()}!`;
         console.log(`Speaking failure message (3 tries): ${message}`);
         speakText(message);
       } else {
@@ -468,7 +475,7 @@ export const GameBoard = () => {
     setAttempts(prev => prev + 1);
 
     // Find if there's a matching set (only check active categories for current level)
-    const match = gameMatches.find(gameMatch => 
+    const match = matches.find(gameMatch => 
       activeCategoriesForLevel.every(cat => gameMatch[cat] === selections[cat])
     );
 
@@ -480,29 +487,32 @@ export const GameBoard = () => {
       setConsecutiveFailures(0);  // Reset failures on success
 
       // 🎉 Show champagne overlay now; run your existing flow AFTER closing it
+      const leadingItem = match[categoryOrder[0]];
       celebrateWin({
-        title: `Celebrate ${match.country}! 🎉`,
-        sub:  `Great job — everything matches ${match.country}.`,
+        title: `Celebrate ${leadingItem}! 🎉`,
+        sub:  `Great job — everything matches ${leadingItem}.`,
         // flag: `/assets/flags/${match.country.toLowerCase()}.svg`, // optional if you have this path
         onDone: () => {
           // Voice AFTER celebration
-          speakText(`PERFECT! ${match.country} WINS!`);
+          speakText(`PERFECT! ${leadingItem} WINS!`);
 
-          // Country celebration popup AFTER celebration
-          setCelebrationCountry(match.country);
-          setShowCelebration(true);
-
-          // Music AFTER popup
-          setTimeout(() => {
-            playCountryMusic(match.country);
-            setTimeout(() => playCountryMusic(match.country), 8000);
-            setTimeout(() => playCountryMusic(match.country), 16000);
-          }, 1000);
+          // Country celebration popup AFTER celebration (only for geography)
+          if (currentSubject === 'geography') {
+            setCelebrationCountry(leadingItem);
+            setShowCelebration(true);
+            
+            // Music AFTER popup (only for geography)
+            setTimeout(() => {
+              playCountryMusic(leadingItem);
+              setTimeout(() => playCountryMusic(leadingItem), 8000);
+              setTimeout(() => playCountryMusic(leadingItem), 16000);
+            }, 1000);
+          }
 
           // Toast AFTER celebration
           toast({
             title: "🎉 INCREDIBLE MATCH! 🎉",
-            description: `🌟 AMAZING! You matched ${match.country} perfectly! 🎵 Listen to their beautiful children's song! 🎶`,
+            description: `🌟 AMAZING! You matched ${leadingItem} perfectly! ${currentSubject === 'geography' ? '🎵 Listen to their beautiful children\'s song! 🎶' : '📚 Excellent knowledge! 🧠'}`,
             variant: "default"
           });
         }
@@ -516,15 +526,15 @@ export const GameBoard = () => {
       setConsecutiveFailures(newFailures);
       
       // Provide specific feedback about what's wrong
-      const country = selections.country;
-      const capital = selections.capital;
+      const leadingItem = selections[categoryOrder[0]];
+      const secondItem = selections[categoryOrder[1]];
       
       // Find correct capital for selected country
-      const correctMatch = gameMatches.find(m => m.country === country);
+      const correctMatch = matches.find(m => m[categoryOrder[0]] === selections[categoryOrder[0]]);
       let feedbackText = "That combination is not correct. ";
       
-      if (country && capital && correctMatch && correctMatch.capital !== capital) {
-        feedbackText = `${capital} is not the capital of ${country}. The correct capital is ${correctMatch.capital}. Try again!`;
+      if (selections[categoryOrder[0]] && selections[categoryOrder[1]] && correctMatch && correctMatch[categoryOrder[1]] !== selections[categoryOrder[1]]) {
+        feedbackText = `${selections[categoryOrder[1]]} is not the ${subjectCategoryNames[categoryOrder[1]]} of ${selections[categoryOrder[0]]}. The correct ${subjectCategoryNames[categoryOrder[1]]} is ${correctMatch[categoryOrder[1]]}. Try again!`;
       }
       
       speakText(feedbackText);
@@ -561,10 +571,10 @@ export const GameBoard = () => {
   };
 
   const showCorrectAnswer = () => {
-    // Use the user's selected country to teach the correct match
-    const userSelectedCountry = selections.country;
-    const correctMatch = gameMatches.find(match => match.country === userSelectedCountry) || 
-                        gameMatches[Math.floor(Math.random() * gameMatches.length)];
+    // Use the user's selected leading item to teach the correct match
+    const userSelectedLeadingItem = selections[categoryOrder[0]];
+    const correctMatch = matches.find(match => match[categoryOrder[0]] === userSelectedLeadingItem) || 
+                        matches[Math.floor(Math.random() * matches.length)];
     
     // First, trigger exciting spin animations 4 times
     let spinCount = 0;
@@ -578,41 +588,32 @@ export const GameBoard = () => {
         
         // After 4 spins, show the correct educational answer
         setTimeout(() => {
-          speakText(`Here's the perfect match! ${correctMatch.country} is the country!`);
+          const leadingCategory = categoryOrder[0];
+          const leadingValue = correctMatch[leadingCategory];
+          speakText(`Here's the perfect match! ${leadingValue} is the ${subjectCategoryNames[leadingCategory]}!`);
           
           // Set selections one by one with voice feedback
-          setSelections(prev => ({ ...prev, country: correctMatch.country }));
+          setSelections(prev => ({ ...prev, [leadingCategory]: leadingValue }));
           
-          setTimeout(() => {
-            speakText(`${correctMatch.capital} is the capital of ${correctMatch.country}!`);
-            setSelections(prev => ({ ...prev, capital: correctMatch.capital }));
-          }, 1000);
+          // Show other categories in sequence
+          activeCategoriesForLevel.slice(1).forEach((cat, index) => {
+            setTimeout(() => {
+              const value = correctMatch[cat];
+              speakText(`${value} is the ${subjectCategoryNames[cat]} of ${leadingValue}!`);
+              setSelections(prev => ({ ...prev, [cat]: value }));
+            }, (index + 1) * 1000);
+          });
           
+          // Final message
           setTimeout(() => {
-            speakText(`${correctMatch.language} is the language of ${correctMatch.country}!`);
-            setSelections(prev => ({ ...prev, language: correctMatch.language }));
-          }, 2000);
-          
-          setTimeout(() => {
-            speakText(`${correctMatch.currency} is the currency of ${correctMatch.country}!`);
-            setSelections(prev => ({ ...prev, currency: correctMatch.currency }));
-          }, 3000);
-          
-          setTimeout(() => {
-            speakText(`${correctMatch.continent} is the continent where ${correctMatch.country} is located!`);
-            setSelections(prev => ({ ...prev, continent: correctMatch.continent }));
-          }, 4000);
-          
-          setTimeout(() => {
-            speakText(`And this is the flag of ${correctMatch.country}! Study this perfect match!`);
-            setSelections(prev => ({ ...prev, flag: correctMatch.flag }));
+            speakText(`Study this perfect match for ${leadingValue}!`);
             
             toast({
               title: "🎓 EDUCATIONAL MOMENT! 🎓",
-              description: `Perfect match for ${correctMatch.country}! Learn this combination!`,
+              description: `Perfect match for ${leadingValue}! Learn this combination!`,
               variant: "default"
             });
-          }, 5000);
+          }, activeCategoriesForLevel.length * 1000);
           
           // Reset after showing the complete match
           setTimeout(() => {
@@ -620,7 +621,7 @@ export const GameBoard = () => {
             setConsecutiveFailures(0);
             resetGame();
             speakText("Now try again with what you've learned!");
-          }, 10000);
+          }, (activeCategoriesForLevel.length + 5) * 1000);
           
         }, 2000);
       }
@@ -629,18 +630,15 @@ export const GameBoard = () => {
 
   const resetGame = () => {
     console.log('resetGame called');
-    setSelections({
-      country: null,
-      capital: null,
-      language: null,
-      currency: null,
-      continent: null,
-      flag: null
+    const initialSelections: Selections = {};
+    Object.keys(subjectData.categories).forEach(key => {
+      initialSelections[key] = null;
     });
+    setSelections(initialSelections);
     setIsMatched(false);
     setIsCorrect(false);
-    // Reset enabled categories to only country
-    setEnabledCategories(new Set(['country']));
+    // Reset enabled categories to only the first one
+    setEnabledCategories(new Set([categoryOrder[0]]));
     // Reset welcome message so it shows again
     setHasWelcomed(false);
   };
@@ -697,18 +695,27 @@ export const GameBoard = () => {
         {/* SUPER EXCITING HEADER */}
         <Card className="p-8 bg-gradient-electric text-white shadow-rainbow animate-pulse-rainbow border-4 border-double border-white/30">
           <div className="text-center space-y-6">
-            <div className="flex items-center justify-center gap-4">
-              <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
-              <h1 className="text-6xl font-bold text-white drop-shadow-2xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl py-4 px-8 border-4 border-yellow-400 shadow-2xl">
-                🌍 INTELLIGENT QUIZ ADVENTURE! 🌍
-              </h1>
-              <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
+                <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl py-4 px-8 border-4 border-yellow-400 shadow-2xl">
+                  🌍 INTELLIGENT QUIZ ADVENTURE! 🌍
+                </h1>
+                <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
+              </div>
+              <SubjectSelector 
+                selectedSubject={currentSubject}
+                onSubjectChange={(newSubject) => {
+                  setCurrentSubject(newSubject);
+                  resetAll();
+                }}
+              />
             </div>
             <p className="text-2xl font-bold text-white bg-blue-800/80 px-4 py-2 rounded-2xl border-2 border-yellow-300 shadow-lg">
-              🎵 Match countries and hear their amazing music! 🎵
+              🎵 Master {subjectData.name} with interactive learning! 🎵
             </p>
             <div className="text-lg font-semibold text-white bg-purple-800/80 px-4 py-2 rounded-2xl border-2 border-pink-300 shadow-lg">
-              Spin the magical slots and discover the world! 🎰✨
+              Spin the magical slots and explore {subjectData.name}! 🎰✨
             </div>
             <div className="flex justify-center gap-6 flex-wrap">
               <Badge className="text-2xl px-6 py-3 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow">
@@ -751,7 +758,7 @@ export const GameBoard = () => {
             const isActiveInLevel = activeCategoriesForLevel.includes(categoryKey);
             const isEnabled = enabledCategories.has(categoryKey) && isActiveInLevel;
             const containerClass = !isActiveInLevel ? "opacity-20 blur-lg pointer-events-none" : !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
-            const categoryOptions = categories[categoryKey] || []; // Defensive programming
+            const categoryOptions = subjectCategories[categoryKey] || []; // Defensive programming
             
             // Skip rendering if no options available
             if (categoryOptions.length === 0) {
@@ -763,7 +770,7 @@ export const GameBoard = () => {
               return (
                 <div key={categoryKey} className={containerClass}>
                   <FlagSlotMachine
-                    category={categoryNames[categoryKey]}
+                    category={subjectCategoryNames[categoryKey]}
                     options={categoryOptions}
                     selectedValue={selections[categoryKey]}
                     onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
@@ -778,7 +785,7 @@ export const GameBoard = () => {
             return (
               <div key={categoryKey} className={containerClass}>
                 <SlotMachine
-                  category={categoryNames[categoryKey]}
+                  category={subjectCategoryNames[categoryKey]}
                   options={categoryOptions}
                   selectedValue={selections[categoryKey]}
                   onSelectionChange={(value) => handleSelectionChange(categoryKey, value)}
@@ -881,7 +888,7 @@ export const GameBoard = () => {
               </h2>
               <div className="text-7xl animate-pulse">🎊🎈🎊</div>
               <p className="text-4xl font-bold text-yellow-100 animate-bounce-crazy bg-red-600/30 px-6 py-3 rounded-full border-4 border-yellow-300">
-                🎵 ENJOY THE COUNTRY'S BEAUTIFUL MUSIC! 🎵
+                {currentSubject === 'geography' ? '🎵 ENJOY THE COUNTRY\'S BEAUTIFUL MUSIC! 🎵' : '🧠 EXCELLENT KNOWLEDGE MASTERY! 🧠'}
               </p>
               <div className="text-5xl animate-wiggle">⭐🌈⭐</div>
               <div className="text-2xl text-white/90 animate-pulse bg-green-600/30 px-4 py-2 rounded-lg">
@@ -891,12 +898,14 @@ export const GameBoard = () => {
           </Card>
         )}
         
-        {/* Country Celebration Popup */}
-        <CountryCelebration 
-          country={celebrationCountry}
-          isOpen={showCelebration}
-          onClose={() => setShowCelebration(false)}
-        />
+        {/* Country Celebration Popup - only show for geography */}
+        {currentSubject === 'geography' && (
+          <CountryCelebration 
+            country={celebrationCountry}
+            isOpen={showCelebration}
+            onClose={() => setShowCelebration(false)}
+          />
+        )}
       </div>
     </div>
   );
