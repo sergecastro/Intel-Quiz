@@ -44,6 +44,7 @@ export const GameBoard = () => {
   const speechQueueRef = useRef<string[]>([]);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [showVoicePrompt, setShowVoicePrompt] = useState(false);
+  const [level, setLevel] = useState(1);
   
   const { toast } = useToast();
   const { playButtonSound, playErrorSound, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
@@ -231,6 +232,18 @@ export const GameBoard = () => {
   };
 
   const categoryOrder: CategoryKey[] = ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
+  
+  // Level-based active categories
+  const getLevelCategories = (currentLevel: number): CategoryKey[] => {
+    switch (currentLevel) {
+      case 1: return ['country', 'language', 'continent'];
+      case 2: return ['country', 'capital', 'language', 'continent']; 
+      case 3: return ['country', 'capital', 'language', 'currency', 'continent', 'flag'];
+      default: return ['country', 'language', 'continent'];
+    }
+  };
+  
+  const activeCategoriesForLevel = getLevelCategories(level);
 
   // Enhanced state management for robust selection handling
   const [speechTimer, setSpeechTimer] = useState<NodeJS.Timeout | null>(null);
@@ -419,7 +432,7 @@ export const GameBoard = () => {
   const checkMatch = () => {
     playButtonSound();
     console.log('Current selections:', selections);
-    const allSelected = categoryOrder.every(cat => {
+    const allSelected = activeCategoriesForLevel.every(cat => {
       const value = selections[cat];
       console.log(`Category ${cat}: "${value}" (type: ${typeof value})`);
       return value && value !== null && value !== "";
@@ -430,7 +443,7 @@ export const GameBoard = () => {
       playErrorSound();
       toast({
         title: "Incomplete Selection",
-        description: "Please select an item from each category!",
+        description: `Please select all items for Level ${level}!`,
         variant: "destructive"
       });
       return;
@@ -438,14 +451,9 @@ export const GameBoard = () => {
 
     setAttempts(prev => prev + 1);
 
-    // Find if there's a matching set
+    // Find if there's a matching set (only check active categories for current level)
     const match = gameMatches.find(gameMatch => 
-      gameMatch.country === selections.country &&
-      gameMatch.capital === selections.capital &&
-      gameMatch.language === selections.language &&
-      gameMatch.currency === selections.currency &&
-      gameMatch.continent === selections.continent &&
-      gameMatch.flag === selections.flag
+      activeCategoriesForLevel.every(cat => gameMatch[cat] === selections[cat])
     );
 
     setIsMatched(true);
@@ -709,6 +717,25 @@ export const GameBoard = () => {
               >
                 {isEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF'}
               </Button>
+              <div className="flex gap-2">
+                {[1, 2, 3].map(levelNum => (
+                  <Button
+                    key={levelNum}
+                    onClick={() => {
+                      setLevel(levelNum);
+                      resetGame();
+                      playButtonSound();
+                    }}
+                    className={`text-xl px-4 py-2 border-4 font-bold transition-all duration-300 ${
+                      level === levelNum 
+                        ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow' 
+                        : 'bg-gradient-magical text-white border-white/50 hover:scale-110'
+                    }`}
+                  >
+                    LEVEL {levelNum}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </Card>
@@ -720,11 +747,22 @@ export const GameBoard = () => {
           duration={6000}
         />
 
+        {/* Level Info */}
+        <Card className="p-4 bg-gradient-magical border-4 border-yellow-400 text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">
+            🎯 LEVEL {level} - {level === 1 ? 'EASY' : level === 2 ? 'MEDIUM' : 'HARD'} 🎯
+          </h2>
+          <p className="text-lg text-white">
+            Match {activeCategoriesForLevel.length} categories: {activeCategoriesForLevel.map(cat => categoryNames[cat]).join(', ')}
+          </p>
+        </Card>
+
         {/* Game Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {categoryOrder.map((categoryKey) => {
-            const isEnabled = enabledCategories.has(categoryKey);
-            const containerClass = !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
+            const isActiveInLevel = activeCategoriesForLevel.includes(categoryKey);
+            const isEnabled = enabledCategories.has(categoryKey) && isActiveInLevel;
+            const containerClass = !isActiveInLevel ? "opacity-20 blur-lg pointer-events-none" : !isEnabled ? "opacity-40 blur-sm pointer-events-none" : "";
             const categoryOptions = categories[categoryKey] || []; // Defensive programming
             
             // Skip rendering if no options available
