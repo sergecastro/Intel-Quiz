@@ -148,7 +148,7 @@ export const SlotMachine = ({
           
           {/* MAGICAL SLOT WINDOW */}
           <div className={`
-            relative mx-auto w-full h-16 bg-gradient-to-b from-purple-900 via-blue-900 to-indigo-900 rounded-xl
+            relative mx-auto w-full h-20 bg-gradient-to-b from-purple-900 via-blue-900 to-indigo-900 rounded-xl
             border-6 border-double border-yellow-400 shadow-rainbow animate-pulse-rainbow
             flex items-center justify-center overflow-hidden
             ${isSpinning ? 'animate-disco-ball' : 'hover:animate-wiggle'}
@@ -156,8 +156,8 @@ export const SlotMachine = ({
             {/* MAGICAL INNER DISPLAY */}
             <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-3 border-yellow-400 flex items-center justify-center shadow-inner overflow-hidden">
                <div className={`
-                text-xl font-black px-4 py-2 rounded-lg transition-all duration-300 text-center min-h-[3rem] flex items-center justify-center w-full
-                ${isSpinning ? 'animate-bounce-crazy text-4xl' : 'animate-pulse'}
+                text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 text-center min-h-[4rem] flex items-center justify-center w-full leading-tight
+                ${isSpinning ? 'animate-bounce-crazy text-lg' : 'animate-pulse'}
                 ${selectedValue && isEnabled ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
                  {!isEnabled ? (
@@ -165,11 +165,11 @@ export const SlotMachine = ({
                  ) : isSpinning ? '🎰✨🎲' : !hasInteracted ? (
                    <span className="text-gray-400 text-sm">---</span>
                  ) : (
-                   <span className="drop-shadow-sm font-extrabold">
-                     {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
-                       ? options[currentIndex] 
-                       : '---'}
-                   </span>
+                    <span className="drop-shadow-sm font-normal">
+                      {options.length > 0 && currentIndex >= 0 && currentIndex < options.length 
+                        ? options[currentIndex] 
+                        : '---'}
+                    </span>
                  )}
               </div>
             </div>
