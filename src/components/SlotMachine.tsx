@@ -156,8 +156,8 @@ export const SlotMachine = ({
             {/* MAGICAL INNER DISPLAY */}
             <div className="absolute inset-2 bg-gradient-to-b from-white via-yellow-50 to-white rounded-lg border-3 border-yellow-400 flex items-center justify-center shadow-inner overflow-hidden">
                <div className={`
-                text-sm font-medium px-3 py-2 rounded-lg transition-all duration-300 text-center min-h-[4rem] flex items-center justify-center w-full leading-tight
-                ${isSpinning ? 'animate-bounce-crazy text-lg' : 'animate-pulse'}
+                text-base font-semibold px-3 py-2 rounded-lg transition-all duration-300 text-center min-h-[4rem] flex items-center justify-center w-full leading-tight
+                ${isSpinning ? 'animate-bounce-crazy text-xl' : 'animate-pulse'}
                 ${selectedValue && isEnabled ? 'text-white bg-gradient-to-b from-purple-600 to-purple-800 shadow-lg border-2 border-yellow-400' : 'text-purple-900 bg-gradient-to-b from-white to-gray-100 border-2 border-purple-400'}
               `}>
                  {!isEnabled ? (
