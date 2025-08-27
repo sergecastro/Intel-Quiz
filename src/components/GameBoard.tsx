@@ -423,9 +423,17 @@ export const GameBoard = () => {
           const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
           speakText(message);
         } else {
-          // For other categories, tell them it doesn't match and suggest trying different options
-          const message = `NO! ${value.toUpperCase()} IS NOT THE CORRECT ${subjectCategoryNames[category].toUpperCase()} FOR ${leadingValue.toUpperCase()}! TRY A DIFFERENT ${subjectCategoryNames[category].toUpperCase()}!`;
-          speakText(message);
+          // For other categories, provide a correct example from the available matches
+          const firstMatch = matches[0]; // Get the first available match as an example
+          if (firstMatch) {
+            const correctValue = firstMatch[category];
+            const correctLeading = firstMatch[categoryOrder[0]];
+            const message = `NO! FOR EXAMPLE, CORRECT ${subjectCategoryNames[category].toUpperCase()} FOR ${correctLeading.toUpperCase()} IS ${correctValue.toUpperCase()}!`;
+            speakText(message);
+          } else {
+            const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
+            speakText(message);
+          }
         }
       } else {
         // Give specific feedback that this choice doesn't work with current leading item
