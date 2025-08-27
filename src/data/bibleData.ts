@@ -101,7 +101,7 @@ export const bibleCategories = {
     // Plausible distractors  
     "Isaac", "Jacob", "Joshua", "Samuel", "Elijah",
     "Esther", "Job", "Jeremiah", "Ezekiel", "Isaiah",
-    "Gideon", "Samson", "Saul", "Elisha", "Nehemiah",
+    "Gideon", "Saul", "Elisha", "Nehemiah", "Esau",
     // Funny options
     "Abraham's GPS Adventure", "Moses' Wilderness Hiking Guide",
     "David's Giant-Slaying Tutorial", "Noah's Ark Animal Reviews",
