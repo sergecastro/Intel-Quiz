@@ -1,5 +1,6 @@
 import { gameMatches, categories, categoryNames, CategoryKey } from './gameData';
 import { historyMatches, historyCategories, historyCategoryNames, HistoryCategoryKey } from './historyData';
+import { biologyMatches, biologyCategories, biologyCategoryNames, BiologyCategoryKey } from './biologyData';
 
 export interface Subject {
   id: string;
@@ -41,10 +42,24 @@ export const subjects: Record<string, Subject> = {
       3: ['event', 'startEndYear', 'keyFigures', 'primaryRegion', 'majorCauses'],
       4: ['event', 'startEndYear', 'keyFigures', 'primaryRegion', 'majorCauses', 'majorOutcomes']
     }
+  },
+  biology: {
+    id: 'biology',
+    name: 'Biology',
+    icon: '🧬',
+    matches: biologyMatches,
+    categories: biologyCategories,
+    categoryNames: biologyCategoryNames,
+    levels: {
+      1: ['organism', 'scientificClassification', 'habitat'],
+      2: ['organism', 'scientificClassification', 'habitat', 'diet'],
+      3: ['organism', 'scientificClassification', 'habitat', 'diet', 'uniqueTrait'],
+      4: ['organism', 'scientificClassification', 'habitat', 'diet', 'uniqueTrait', 'lifespan', 'conservationStatus']
+    }
   }
 };
 
 export const availableSubjects = Object.values(subjects);
 
 export type SubjectKey = keyof typeof subjects;
-export type AnyCategoryKey = CategoryKey | HistoryCategoryKey;
+export type AnyCategoryKey = CategoryKey | HistoryCategoryKey | BiologyCategoryKey;
