@@ -403,23 +403,28 @@ export const GameBoard = () => {
       // Reset failures for this category on success
       setCategoryFailures(prev => ({ ...prev, [category]: 0 }));
       
-      // Enable the next category when current one is correct (but only if it's active in current level)
-      if (nextCategory && activeCategoriesForLevel.includes(nextCategory)) {
-        const currentEnabledArray = Array.from(enabledCategories);
-        currentEnabledArray.push(nextCategory);
-        setEnabledCategories(new Set(currentEnabledArray));
-        console.log(`Enabled next category: ${nextCategory}`);
-      }
+      // Find the next category in the level progression
+      const currentCategoryIndex = activeCategoriesForLevel.indexOf(category);
+      const nextCategoryInLevel = activeCategoriesForLevel[currentCategoryIndex + 1];
       
-      let message = `CORRECT! ${value.toUpperCase()}!`;
-      if (nextCategory && activeCategoriesForLevel.includes(nextCategory)) {
-        const nextCategoryName = categoryNames[nextCategory];
-        message += ` NOW ${nextCategoryName.toUpperCase()}!`;
+      // Enable the next category when current one is correct
+      if (nextCategoryInLevel) {
+        setEnabledCategories(prev => {
+          const newSet = new Set(prev);
+          newSet.add(nextCategoryInLevel);
+          console.log(`Enabled next category: ${nextCategoryInLevel}, all enabled:`, Array.from(newSet));
+          return newSet;
+        });
+        
+        let message = `CORRECT! ${value.toUpperCase()}! NOW ${categoryNames[nextCategoryInLevel].toUpperCase()}!`;
+        console.log(`Speaking success message: ${message}`);
+        speakText(message);
       } else {
-        message += ` CHECK MATCH!`;
+        // No more categories to unlock, ready to check match
+        let message = `CORRECT! ${value.toUpperCase()}! CHECK MATCH!`;
+        console.log(`Speaking success message: ${message}`);
+        speakText(message);
       }
-      console.log(`Speaking success message: ${message}`);
-      speakText(message);
     } else {
       // Track failures for this category
       const currentFailures = (categoryFailures[category] || 0) + 1;
@@ -810,32 +815,28 @@ export const GameBoard = () => {
             ))}
             
             {/* Fixed container with consistent width to prevent jumping */}
-            <div className="flex gap-3 w-[400px] justify-center items-center">
+            <div className="flex gap-3 min-w-[500px] justify-center items-center">
               {/* Check if all required categories are filled for current level */}
               {(() => {
-                const allFilled = activeCategoriesForLevel.every(cat => 
-                  selections[cat] && 
-                  selections[cat] !== null && 
-                  selections[cat] !== "" && 
-                  String(selections[cat]).trim() !== ""
-                );
+                const allFilled = activeCategoriesForLevel.every(cat => {
+                  const value = selections[cat];
+                  return value !== null && value !== undefined && value !== "";
+                });
                 console.log(`CHECK MATCH visibility: Level ${level}, ${activeCategoriesForLevel.length} categories, all filled: ${allFilled}, matched: ${isMatched}`);
                 return allFilled && !isMatched;
-              })() ? (
+              })() && (
                 <Button
                   onClick={checkMatch}
-                  className="bg-gradient-success text-success-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
+                  className="bg-gradient-success text-success-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold min-w-[220px]"
                 >
                   <Sparkles className="h-5 w-5 mr-2 animate-disco-ball" />
                   ✨ CHECK MATCH! ✨
                 </Button>
-              ) : (
-                <div className="w-[200px]"></div>
               )}
               
               <Button
                 onClick={resetAll}
-                className="bg-gradient-warm text-primary-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
+                className="bg-gradient-warm text-primary-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold min-w-[200px]"
               >
                 🔄 NEW GAME! 🔄
               </Button>
