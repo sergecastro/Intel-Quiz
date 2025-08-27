@@ -703,16 +703,16 @@ export const GameBoard = () => {
       )}
 
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* SUPER EXCITING HEADER */}
-        <Card className="p-8 bg-gradient-electric text-white shadow-rainbow animate-pulse-rainbow border-4 border-double border-white/30">
-          <div className="text-center space-y-6">
+        {/* COMPACT HEADER */}
+        <Card className="p-4 bg-gradient-electric text-white shadow-rainbow animate-pulse-rainbow border-4 border-double border-white/30">
+          <div className="text-center space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
-                <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl py-4 px-8 border-4 border-yellow-400 shadow-2xl">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-8 w-8 animate-disco-ball text-yellow-300" />
+                <h1 className="text-2xl md:text-4xl font-bold text-white drop-shadow-2xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl py-2 px-4 border-4 border-yellow-400 shadow-2xl">
                   🌍 INTELLIGENT QUIZ ADVENTURE! 🌍
                 </h1>
-                <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
+                <Sparkles className="h-8 w-8 animate-disco-ball text-yellow-300" />
               </div>
               <SubjectSelector 
                 selectedSubject={currentSubject}
@@ -722,22 +722,19 @@ export const GameBoard = () => {
                 }}
               />
             </div>
-            <p className="text-2xl font-bold text-white bg-blue-800/80 px-4 py-2 rounded-2xl border-2 border-yellow-300 shadow-lg">
-              🎵 Master {subjectData.name} with interactive learning! 🎵
+            <p className="text-lg font-bold text-white bg-blue-800/80 px-3 py-1 rounded-xl border-2 border-yellow-300 shadow-lg">
+              🎵 Master {subjectData.name} with Interactive Learning & Slot Matching! 🎵
             </p>
-            <div className="text-lg font-semibold text-white bg-purple-800/80 px-4 py-2 rounded-2xl border-2 border-pink-300 shadow-lg">
-              Spin the magical slots and explore {subjectData.name}! 🎰✨
-            </div>
-            <div className="flex justify-center gap-6 flex-wrap">
-              <Badge className="text-2xl px-6 py-3 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow">
-                <Trophy className="h-6 w-6 mr-3 text-yellow-300" />
+            <div className="flex justify-center gap-4 flex-wrap">
+              <Badge className="text-lg px-4 py-2 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow">
+                <Trophy className="h-4 w-4 mr-2 text-yellow-300" />
                 SCORE: {score} 🏆
               </Badge>
-              <Badge className="text-2xl px-6 py-3 bg-green-600 text-white border-4 border-yellow-300 animate-wiggle shadow-rainbow">
+              <Badge className="text-lg px-4 py-2 bg-green-600 text-white border-4 border-yellow-300 animate-wiggle shadow-rainbow">
                 TRIES: {attempts} 🎯
               </Badge>
               {consecutiveFailures > 0 && (
-                <Badge className="text-xl px-4 py-2 bg-red-600 text-white border-4 border-orange-300 animate-bounce shadow-rainbow">
+                <Badge className="text-lg px-3 py-1 bg-red-600 text-white border-4 border-orange-300 animate-bounce shadow-rainbow">
                   FAILS: {consecutiveFailures}/3 ⚠️
                 </Badge>
               )}
@@ -746,8 +743,8 @@ export const GameBoard = () => {
                   playButtonSound();
                   toggleAudio();
                 }}
-                className="text-2xl px-6 py-3 bg-gradient-warm text-white border-4 border-white/50 hover:scale-110 transition-all duration-300 animate-pulse-rainbow"
-                size="lg"
+                className="text-lg px-4 py-2 bg-gradient-warm text-white border-4 border-white/50 hover:scale-110 transition-all duration-300 animate-pulse-rainbow"
+                size="sm"
               >
                 {isEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF'}
               </Button>
