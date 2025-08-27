@@ -739,15 +739,6 @@ export const GameBoard = () => {
           duration={6000}
         />
 
-        {/* Level Info */}
-        <Card className="p-4 bg-gradient-magical border-4 border-yellow-400 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            🎯 LEVEL {level} - {level === 1 ? 'EASY' : level === 2 ? 'MEDIUM' : 'HARD'} 🎯
-          </h2>
-          <p className="text-lg text-white">
-            Match {activeCategoriesForLevel.length} categories: {activeCategoriesForLevel.map(cat => categoryNames[cat]).join(', ')}
-          </p>
-        </Card>
 
         {/* Game Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -797,49 +788,45 @@ export const GameBoard = () => {
         </div>
 
         {/* SUPER ACTION BUTTONS */}
-        <Card className="p-8 bg-gradient-magical border-4 border-double border-yellow-400 shadow-rainbow">
-          <div className="flex flex-col gap-6 justify-center items-center">
-            {/* Level Selection */}
-            <div className="flex gap-3">
-              {[1, 2, 3].map(levelNum => (
-                <Button
-                  key={levelNum}
-                  onClick={() => {
-                    setLevel(levelNum);
-                    resetGame();
-                    playButtonSound();
-                  }}
-                  className={`text-xl px-6 py-3 border-4 font-bold transition-all duration-300 ${
-                    level === levelNum 
-                      ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow shadow-success' 
-                      : 'bg-gradient-electric text-white border-purple-300 hover:scale-110 shadow-electric'
-                  }`}
-                >
-                  LEVEL {levelNum}
-                </Button>
-              ))}
-            </div>
+        <Card className="p-6 bg-gradient-magical border-4 border-double border-yellow-400 shadow-rainbow">
+          <div className="flex flex-wrap gap-3 justify-center items-center">
+            {/* All buttons in one row */}
+            {[1, 2, 3].map(levelNum => (
+              <Button
+                key={levelNum}
+                onClick={() => {
+                  setLevel(levelNum);
+                  resetGame();
+                  playButtonSound();
+                }}
+                className={`text-lg px-4 py-2 border-4 font-bold transition-all duration-300 ${
+                  level === levelNum 
+                    ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow shadow-success' 
+                    : 'bg-gradient-electric text-white border-purple-300 hover:scale-110 shadow-electric'
+                }`}
+              >
+                LEVEL {levelNum}
+              </Button>
+            ))}
             
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            {/* Only show CHECK MATCH when all required slots are filled */}
+            {activeCategoriesForLevel.every(cat => selections[cat] && selections[cat] !== null && selections[cat] !== "") && (
               <Button
                 onClick={checkMatch}
-                size="lg"
-                className="bg-gradient-success text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
+                className="bg-gradient-success text-white text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
                 disabled={isMatched}
               >
-                <Sparkles className="h-8 w-8 mr-3 animate-disco-ball" />
+                <Sparkles className="h-5 w-5 mr-2 animate-disco-ball" />
                 ✨ CHECK MATCH! ✨
               </Button>
-              
-              <Button
-                onClick={resetAll}
-                size="lg"
-                className="bg-gradient-warm text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
-              >
-                🔄 NEW GAME! 🔄
-              </Button>
-            </div>
+            )}
+            
+            <Button
+              onClick={resetAll}
+              className="bg-gradient-warm text-white text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
+            >
+              🔄 NEW GAME! 🔄
+            </Button>
           </div>
         </Card>
 
