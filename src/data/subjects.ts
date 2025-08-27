@@ -3,6 +3,7 @@ import { historyMatches, historyCategories, historyCategoryNames, HistoryCategor
 import { biologyMatches, biologyCategories, biologyCategoryNames, BiologyCategoryKey } from './biologyData';
 import { chemistryMatches, chemistryCategories, chemistryCategoryNames, ChemistryCategoryKey } from './chemistryData';
 import { literatureMatches, literatureCategories, literatureCategoryNames, LiteratureCategoryKey } from './literatureData';
+import { bibleMatches, bibleCategories, bibleCategoryNames, BibleStudiesCategoryKey } from './bibleData';
 
 export interface Subject {
   id: string;
@@ -86,10 +87,24 @@ export const subjects: Record<string, Subject> = {
       3: ['book', 'author', 'mainCharacter', 'centralTheme', 'publicationDecade', 'genreStyle'],
       4: ['book', 'author', 'mainCharacter', 'centralTheme', 'publicationDecade', 'genreStyle', 'keyQuote', 'notableAdaptation']
     }
+  },
+  bible: {
+    id: 'bible',
+    name: 'Bible Studies',
+    icon: '📖',
+    matches: bibleMatches,
+    categories: bibleCategories,
+    categoryNames: bibleCategoryNames,
+    levels: {
+      1: ['story', 'location', 'family', 'quote'],
+      2: ['story', 'location', 'family', 'quote', 'theme'],
+      3: ['story', 'location', 'family', 'quote', 'theme', 'era'],
+      4: ['story', 'location', 'family', 'quote', 'theme', 'era', 'miracle']
+    }
   }
 };
 
 export const availableSubjects = Object.values(subjects);
 
 export type SubjectKey = keyof typeof subjects;
-export type AnyCategoryKey = CategoryKey | HistoryCategoryKey | BiologyCategoryKey | ChemistryCategoryKey | LiteratureCategoryKey;
+export type AnyCategoryKey = CategoryKey | HistoryCategoryKey | BiologyCategoryKey | ChemistryCategoryKey | LiteratureCategoryKey | BibleStudiesCategoryKey;
