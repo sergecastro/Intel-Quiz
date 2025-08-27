@@ -364,14 +364,25 @@ export const GameBoard = () => {
       console.log(`Country selected: ${value} - enabling capital category and speaking`);
       // Reset failures when new country is chosen
       setCategoryFailures({});
-      // Enable only the next category (capital) when country is selected
-      setEnabledCategories(new Set(['country', 'capital']));
-      console.log('Enabled categories updated to country and capital only');
       
-      // Ensure speech happens
-      const message = `${value.toUpperCase()}! NOW CHOOSE CAPITAL!`;
-      console.log(`Speaking: ${message}`);
-      speakText(message);
+      // Enable next category based on level
+      const nextCategoryInLevel = activeCategoriesForLevel.find(cat => 
+        categoryOrder.indexOf(cat) > categoryOrder.indexOf('country')
+      );
+      
+      if (nextCategoryInLevel) {
+        setEnabledCategories(new Set(['country', nextCategoryInLevel]));
+        console.log(`Enabled categories updated to country and ${nextCategoryInLevel}`);
+        
+        const message = `${value.toUpperCase()}! NOW CHOOSE ${categoryNames[nextCategoryInLevel].toUpperCase()}!`;
+        console.log(`Speaking: ${message}`);
+        speakText(message);
+      } else {
+        // If no next category (shouldn't happen but defensive programming)
+        const message = `${value.toUpperCase()}! GREAT CHOICE!`;
+        console.log(`Speaking: ${message}`);
+        speakText(message);
+      }
       return;
     }
 
@@ -392,8 +403,8 @@ export const GameBoard = () => {
       // Reset failures for this category on success
       setCategoryFailures(prev => ({ ...prev, [category]: 0 }));
       
-      // Enable the next category when current one is correct
-      if (nextCategory) {
+      // Enable the next category when current one is correct (but only if it's active in current level)
+      if (nextCategory && activeCategoriesForLevel.includes(nextCategory)) {
         const currentEnabledArray = Array.from(enabledCategories);
         currentEnabledArray.push(nextCategory);
         setEnabledCategories(new Set(currentEnabledArray));
@@ -401,7 +412,7 @@ export const GameBoard = () => {
       }
       
       let message = `CORRECT! ${value.toUpperCase()}!`;
-      if (nextCategory) {
+      if (nextCategory && activeCategoriesForLevel.includes(nextCategory)) {
         const nextCategoryName = categoryNames[nextCategory];
         message += ` NOW ${nextCategoryName.toUpperCase()}!`;
       } else {
@@ -684,7 +695,7 @@ export const GameBoard = () => {
             <div className="flex items-center justify-center gap-4">
               <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
               <h1 className="text-6xl font-bold text-white drop-shadow-2xl bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl py-4 px-8 border-4 border-yellow-400 shadow-2xl">
-                🌍 WORLD MATCH ADVENTURE! 🌍
+                🌍 INTELLIGENT QUIZ ADVENTURE! 🌍
               </h1>
               <Sparkles className="h-12 w-12 animate-disco-ball text-yellow-300" />
             </div>
@@ -717,25 +728,6 @@ export const GameBoard = () => {
               >
                 {isEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF'}
               </Button>
-              <div className="flex gap-2">
-                {[1, 2, 3].map(levelNum => (
-                  <Button
-                    key={levelNum}
-                    onClick={() => {
-                      setLevel(levelNum);
-                      resetGame();
-                      playButtonSound();
-                    }}
-                    className={`text-xl px-4 py-2 border-4 font-bold transition-all duration-300 ${
-                      level === levelNum 
-                        ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow' 
-                        : 'bg-gradient-magical text-white border-white/50 hover:scale-110'
-                    }`}
-                  >
-                    LEVEL {levelNum}
-                  </Button>
-                ))}
-              </div>
             </div>
           </div>
         </Card>
@@ -806,33 +798,48 @@ export const GameBoard = () => {
 
         {/* SUPER ACTION BUTTONS */}
         <Card className="p-8 bg-gradient-magical border-4 border-double border-yellow-400 shadow-rainbow">
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button
-              onClick={checkMatch}
-              size="lg"
-              className="bg-gradient-success text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
-              disabled={isMatched}
-            >
-              <Sparkles className="h-8 w-8 mr-3 animate-disco-ball" />
-              ✨ CHECK MATCH! ✨
-            </Button>
+          <div className="flex flex-col gap-6 justify-center items-center">
+            {/* Level Selection */}
+            <div className="flex gap-3">
+              {[1, 2, 3].map(levelNum => (
+                <Button
+                  key={levelNum}
+                  onClick={() => {
+                    setLevel(levelNum);
+                    resetGame();
+                    playButtonSound();
+                  }}
+                  className={`text-xl px-6 py-3 border-4 font-bold transition-all duration-300 ${
+                    level === levelNum 
+                      ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow shadow-success' 
+                      : 'bg-gradient-electric text-white border-purple-300 hover:scale-110 shadow-electric'
+                  }`}
+                >
+                  LEVEL {levelNum}
+                </Button>
+              ))}
+            </div>
             
-            <Button
-              onClick={spinAllSlots}
-              size="lg"
-              className="bg-gradient-electric text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-wiggle shadow-electric font-bold"
-            >
-              <RotateCcw className="h-8 w-8 mr-3 animate-bounce-crazy" />
-              🎰 SPIN ALL! 🎰
-            </Button>
-            
-            <Button
-              onClick={resetAll}
-              size="lg"
-              className="bg-gradient-warm text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
-            >
-              🔄 NEW GAME! 🔄
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button
+                onClick={checkMatch}
+                size="lg"
+                className="bg-gradient-success text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
+                disabled={isMatched}
+              >
+                <Sparkles className="h-8 w-8 mr-3 animate-disco-ball" />
+                ✨ CHECK MATCH! ✨
+              </Button>
+              
+              <Button
+                onClick={resetAll}
+                size="lg"
+                className="bg-gradient-warm text-white text-2xl px-12 py-6 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
+              >
+                🔄 NEW GAME! 🔄
+              </Button>
+            </div>
           </div>
         </Card>
 
