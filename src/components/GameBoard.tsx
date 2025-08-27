@@ -801,8 +801,8 @@ export const GameBoard = () => {
                 }}
                 className={`text-lg px-4 py-2 border-4 font-bold transition-all duration-300 ${
                   level === levelNum 
-                    ? 'bg-gradient-success text-white border-yellow-300 animate-pulse-rainbow shadow-success' 
-                    : 'bg-gradient-electric text-white border-purple-300 hover:scale-110 shadow-electric'
+                    ? 'bg-gradient-success text-success-foreground border-yellow-300 animate-pulse-rainbow shadow-success' 
+                    : 'bg-gradient-electric text-primary-foreground border-purple-300 hover:scale-110 shadow-electric'
                 }`}
               >
                 LEVEL {levelNum}
@@ -812,10 +812,19 @@ export const GameBoard = () => {
             {/* Fixed container with consistent width to prevent jumping */}
             <div className="flex gap-3 w-[400px] justify-center items-center">
               {/* Check if all required categories are filled for current level */}
-              {activeCategoriesForLevel.every(cat => selections[cat] && selections[cat].trim() !== "") && !isMatched ? (
+              {(() => {
+                const allFilled = activeCategoriesForLevel.every(cat => 
+                  selections[cat] && 
+                  selections[cat] !== null && 
+                  selections[cat] !== "" && 
+                  String(selections[cat]).trim() !== ""
+                );
+                console.log(`CHECK MATCH visibility: Level ${level}, ${activeCategoriesForLevel.length} categories, all filled: ${allFilled}, matched: ${isMatched}`);
+                return allFilled && !isMatched;
+              })() ? (
                 <Button
                   onClick={checkMatch}
-                  className="bg-gradient-success text-white text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
+                  className="bg-gradient-success text-success-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow shadow-success font-bold"
                 >
                   <Sparkles className="h-5 w-5 mr-2 animate-disco-ball" />
                   ✨ CHECK MATCH! ✨
@@ -826,7 +835,7 @@ export const GameBoard = () => {
               
               <Button
                 onClick={resetAll}
-                className="bg-gradient-warm text-white text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
+                className="bg-gradient-warm text-primary-foreground text-lg px-6 py-2 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-bounce-crazy shadow-rainbow font-bold"
               >
                 🔄 NEW GAME! 🔄
               </Button>
