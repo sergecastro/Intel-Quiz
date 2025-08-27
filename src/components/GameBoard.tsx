@@ -42,6 +42,8 @@ export const GameBoard = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationCountry, setCelebrationCountry] = useState<string>('');
   const speechQueueRef = useRef<string[]>([]);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [showVoicePrompt, setShowVoicePrompt] = useState(false);
   
   const { toast } = useToast();
   const { playButtonSound, playErrorSound, playSpinSound, playSelectSound, playCountryMusic, playExcitementSound, toggleAudio, isEnabled } = useGameAudio();
@@ -49,6 +51,12 @@ export const GameBoard = () => {
   // Enhanced Text-to-Speech function with queue and error handling
   const speakText = async (text: string) => {
     console.log(`speakText called with: "${text}"`);
+    
+    // Check if voice is enabled (important for iOS)
+    if (!voiceEnabled) {
+      console.log('Voice not enabled yet, skipping speech');
+      return;
+    }
     
     if (isSpeaking) {
       console.log('Already speaking, adding to queue');
@@ -233,15 +241,50 @@ export const GameBoard = () => {
   const latestSelectionRef = useRef<{category: CategoryKey, value: string} | null>(null);
   const feedbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Check for iOS on mount and show voice prompt
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS && !voiceEnabled) {
+      setShowVoicePrompt(true);
+    } else if (!isIOS) {
+      setVoiceEnabled(true); // Auto-enable for non-iOS
+    }
+  }, [voiceEnabled]);
+
+  // Enhanced voice enablement for iOS
+  const enableVoice = async () => {
+    try {
+      // Test speech synthesis with user interaction
+      const testUtterance = new SpeechSynthesisUtterance('Voice enabled!');
+      testUtterance.volume = 0.1; // Very quiet test
+      window.speechSynthesis.speak(testUtterance);
+      
+      setVoiceEnabled(true);
+      setShowVoicePrompt(false);
+      
+      // Welcome message after enabling voice
+      setTimeout(() => {
+        if (!hasWelcomed) {
+          speakText("WELCOME TO GEOGRAPHY MATCHING GAME! PLEASE CHOOSE THE COUNTRY FIRST!");
+          setHasWelcomed(true);
+        }
+      }, 500);
+    } catch (error) {
+      console.log('Voice enablement failed:', error);
+      setVoiceEnabled(true); // Continue anyway
+      setShowVoicePrompt(false);
+    }
+  };
+
   // Welcome message on component mount
   useEffect(() => {
-    if (!hasWelcomed) {
+    if (!hasWelcomed && voiceEnabled) {
       setTimeout(() => {
         speakText("WELCOME TO GEOGRAPHY MATCHING GAME! PLEASE CHOOSE THE COUNTRY FIRST!");
         setHasWelcomed(true);
       }, 1000);
     }
-  }, [hasWelcomed]);
+  }, [hasWelcomed, voiceEnabled]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -599,6 +642,33 @@ export const GameBoard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-bg p-4">
+      {/* Voice Enable Prompt for iOS */}
+      {showVoicePrompt && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="p-8 bg-gradient-electric text-white shadow-rainbow border-4 border-yellow-300 max-w-md mx-auto">
+            <div className="text-center space-y-6">
+              <div className="text-6xl animate-bounce">🔊</div>
+              <h2 className="text-2xl font-bold text-white">
+                Enable Voice Features
+              </h2>
+              <p className="text-lg text-white/90">
+                Tap the button below to enable voice narration and make the game more exciting!
+              </p>
+              <Button
+                onClick={enableVoice}
+                size="lg"
+                className="bg-gradient-success text-white text-xl px-8 py-4 border-4 border-white/30 hover:scale-110 transition-all duration-300 animate-pulse-rainbow font-bold"
+              >
+                🎵 ENABLE VOICE 🎵
+              </Button>
+              <p className="text-sm text-white/70">
+                (Required for iPhone/iPad voice features)
+              </p>
+            </div>
+          </Card>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto space-y-6">
         {/* SUPER EXCITING HEADER */}
         <Card className="p-8 bg-gradient-electric text-white shadow-rainbow animate-pulse-rainbow border-4 border-double border-white/30">
