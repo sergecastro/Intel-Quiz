@@ -28,7 +28,7 @@ export const SlotMachine = ({
   isEnabled = true,
   audio
 }: SlotMachineProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => Math.floor(Math.random() * (options.length || 1)));
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 

@@ -29,7 +29,7 @@ export const FlagSlotMachine = ({
   isEnabled = true,
   audio
 }: FlagSlotMachineProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => Math.floor(Math.random() * (options.length || 1)));
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
