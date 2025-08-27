@@ -1,6 +1,7 @@
 import { gameMatches, categories, categoryNames, CategoryKey } from './gameData';
 import { historyMatches, historyCategories, historyCategoryNames, HistoryCategoryKey } from './historyData';
 import { biologyMatches, biologyCategories, biologyCategoryNames, BiologyCategoryKey } from './biologyData';
+import { chemistryMatches, chemistryCategories, chemistryCategoryNames, ChemistryCategoryKey } from './chemistryData';
 
 export interface Subject {
   id: string;
@@ -56,10 +57,24 @@ export const subjects: Record<string, Subject> = {
       3: ['organism', 'scientificClassification', 'habitat', 'diet', 'uniqueTrait'],
       4: ['organism', 'scientificClassification', 'habitat', 'diet', 'uniqueTrait', 'lifespan', 'conservationStatus']
     }
+  },
+  chemistry: {
+    id: 'chemistry',
+    name: 'Chemistry',
+    icon: '🧪',
+    matches: chemistryMatches,
+    categories: chemistryCategories,
+    categoryNames: chemistryCategoryNames,
+    levels: {
+      1: ['element', 'atomicSymbol', 'atomicNumber'],
+      2: ['element', 'atomicSymbol', 'atomicNumber', 'periodicGroup'],
+      3: ['element', 'atomicSymbol', 'atomicNumber', 'periodicGroup', 'roomState'],
+      4: ['element', 'atomicSymbol', 'atomicNumber', 'periodicGroup', 'roomState', 'commonUses']
+    }
   }
 };
 
 export const availableSubjects = Object.values(subjects);
 
 export type SubjectKey = keyof typeof subjects;
-export type AnyCategoryKey = CategoryKey | HistoryCategoryKey | BiologyCategoryKey;
+export type AnyCategoryKey = CategoryKey | HistoryCategoryKey | BiologyCategoryKey | ChemistryCategoryKey;
