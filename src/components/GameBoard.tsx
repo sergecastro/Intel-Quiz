@@ -411,21 +411,21 @@ export const GameBoard = () => {
       console.log(`No correct match found for leading item: ${leadingValue}`);
       console.log(`Available matches:`, matches.map(m => m[categoryOrder[0]]));
       
-      // Enable next category even if no match found to prevent freeze
-      const nextCategoryIndex = categoryOrder.indexOf(category) + 1;
-      const nextCategoryInLevel = activeCategoriesForLevel[nextCategoryIndex];
+      // Track failures for this category even when no match found
+      const currentFailures = (categoryFailures[category] || 0) + 1;
+      setCategoryFailures(prev => ({ ...prev, [category]: currentFailures }));
       
-      if (nextCategoryInLevel) {
-        const enabledCats = new Set(enabledCategories);
-        enabledCats.add(nextCategoryInLevel);
-        setEnabledCategories(enabledCats);
-        console.log(`No match found - enabling next category: ${nextCategoryInLevel}`);
-      }
-      
-      // Play error sound and give generic feedback
       playErrorSound();
-      const message = "SORRY, THAT COMBINATION DOESN'T MATCH OUR DATA. TRY ANOTHER SELECTION!";
-      speakText(message);
+      
+      if (currentFailures >= 3) {
+        // After 3 failures, suggest to try different leading item
+        const message = `NO! TRY A DIFFERENT ${subjectCategoryNames[categoryOrder[0]].toUpperCase()} FIRST!`;
+        speakText(message);
+      } else {
+        // Give specific feedback that this choice doesn't work with current leading item
+        const message = `NO! ${value.toUpperCase()} DOESN'T MATCH ${leadingValue.toUpperCase()}! TRY AGAIN!`;
+        speakText(message);
+      }
       return;
     }
 
