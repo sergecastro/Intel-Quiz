@@ -304,6 +304,13 @@ export const TorahGameBoard = () => {
         variant: "default",
       });
 
+      // Clear any pending feedback timer to prevent game freezing
+      if (feedbackTimerRef.current) {
+        clearTimeout(feedbackTimerRef.current);
+        feedbackTimerRef.current = null;
+      }
+      setIsTimerActive(false);
+
       if (nextCategoryInLevel) {
         setEnabledCategories(prev => new Set([...prev, nextCategoryInLevel]));
         const message = `נכון! ${value}! עכשיו ${torahCategoryNames[nextCategoryInLevel]}!`;

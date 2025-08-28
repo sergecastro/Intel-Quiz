@@ -122,11 +122,11 @@ export const SlotMachine = ({
       
       <div className="relative z-10 text-center space-y-2">
         {/* CATEGORY HEADER */}
-        <div className="h-12 flex items-center justify-center">
-          <h3 className={`text-lg font-black transition-colors uppercase tracking-wide text-center ${
+        <div className="h-16 flex items-center justify-center">
+          <h3 className={`text-3xl font-black transition-colors uppercase tracking-wide text-center ${
             isMatched 
               ? isCorrect ? 'text-green-800 animate-bounce-crazy drop-shadow-lg' : 'text-red-700 animate-wiggle drop-shadow-lg'
-              : selectedValue ? 'text-blue-900 drop-shadow-lg bg-cyan-200/90 px-2 py-1 rounded-full border-2 border-blue-400' : 'text-purple-900 drop-shadow-lg'
+              : selectedValue ? 'text-blue-900 drop-shadow-lg bg-cyan-200/90 px-3 py-2 rounded-full border-2 border-blue-400' : 'text-purple-900 drop-shadow-lg'
           }`}>
             {category}
           </h3>
