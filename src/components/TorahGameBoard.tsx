@@ -561,8 +561,8 @@ export const TorahGameBoard = () => {
       <div className="max-w-8xl mx-auto space-y-8">
         {/* SLOT MACHINES LAYOUT - EXACT MIRROR OF ENGLISH VERSION */}
         <div className="space-y-6">
-          {/* TOP ROWS - 6 SMALLER SLOTS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          {/* TOP ROW - 6 SLOTS */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {Array.from({ length: 6 }).map((_, index) => {
               const categoryKey = categoryOrder[index];
               if (!categoryKey) {
