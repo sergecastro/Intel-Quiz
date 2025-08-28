@@ -697,7 +697,7 @@ export const GameBoard = () => {
   }, [isMatched, isCorrect]);
 
   return (
-    <div className="min-h-screen bg-gradient-bg p-4">
+    <div className="min-h-screen bg-gradient-bg p-4" dir="ltr">
       {/* Voice Enable Prompt for iOS */}
       {showVoicePrompt && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
