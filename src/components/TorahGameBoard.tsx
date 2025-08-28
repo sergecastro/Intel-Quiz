@@ -241,7 +241,7 @@ export const TorahGameBoard = () => {
         if (latestSelectionRef.current?.category === category && latestSelectionRef.current?.value === value) {
           provideFeedback(category, value, newSelections);
         }
-      }, 4000);
+      }, 6000);
       
       return newSelections;
     });
@@ -297,9 +297,19 @@ export const TorahGameBoard = () => {
       const currentCategoryIndex = activeCategoriesForLevel.indexOf(category as TorahCategoryKey);
       const nextCategoryInLevel = activeCategoriesForLevel[currentCategoryIndex + 1];
 
+      // Show success toast
+      toast({
+        title: "✅ נכון!",
+        description: `${value} - בחירה מעולה!`,
+        variant: "default",
+      });
+
       if (nextCategoryInLevel) {
         setEnabledCategories(prev => new Set([...prev, nextCategoryInLevel]));
-        const message = `נכון! עכשיו ${torahCategoryNames[nextCategoryInLevel]}!`;
+        const message = `נכון! ${value}! עכשיו ${torahCategoryNames[nextCategoryInLevel]}!`;
+        speakText(message);
+      } else {
+        const message = `נכון! ${value}! בדקו התאמה!`;
         speakText(message);
       }
     } else {
@@ -308,24 +318,21 @@ export const TorahGameBoard = () => {
       setCategoryFailures(prev => ({ ...prev, [category]: currentFailures }));
 
       if (currentFailures >= 3) {
-        setShowingCorrectAnswer(true);
         const correctAnswer = correctMatch[category as keyof typeof correctMatch];
-        setSelections(prev => ({ ...prev, [category]: correctAnswer }));
-        
-        const message = `התשובה הנכונה היא: ${correctAnswer}`;
+        const message = `לא! התשובה הנכונה ل${leadingValue} היא: ${correctAnswer}!`;
         speakText(message);
         
-        setTimeout(() => {
-          setShowingCorrectAnswer(false);
-          const nextCategoryIndex = activeCategoriesForLevel.indexOf(category as TorahCategoryKey);
-          const nextCategory = activeCategoriesForLevel[nextCategoryIndex + 1];
-          
-          if (nextCategory) {
-            setEnabledCategories(prev => new Set([...prev, nextCategory]));
+        // Enable next category after telling them the answer
+        const nextCategoryIndex = activeCategoriesForLevel.indexOf(category as TorahCategoryKey);
+        const nextCategory = activeCategoriesForLevel[nextCategoryIndex + 1];
+        
+        if (nextCategory) {
+          setEnabledCategories(prev => new Set([...prev, nextCategory]));
+          setTimeout(() => {
             const message = `עכשיו ${torahCategoryNames[nextCategory]}!`;
             speakText(message);
-          }
-        }, 5000);
+          }, 3000);
+        }
       } else {
         const message = `לא נכון! נסו שוב!`;
         speakText(message);
@@ -517,18 +524,18 @@ export const TorahGameBoard = () => {
 
         <div className="flex flex-wrap gap-3 justify-center items-center">
           <div className="relative">
-            <Badge className="text-lg px-4 py-2 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow">
-              <Trophy className="h-5 w-5 ml-2 animate-spin" />
+            <Badge className="text-xl px-6 py-3 bg-gradient-success text-white border-4 border-yellow-300 animate-bounce-crazy shadow-rainbow font-bold">
+              <Trophy className="h-6 w-6 ml-2 animate-spin" />
               ניקוד: {score}
             </Badge>
-            <div className="absolute -top-2 -right-2 text-2xl animate-bounce">⭐</div>
+            <div className="absolute -top-2 -right-2 text-3xl animate-bounce">⭐</div>
           </div>
           
-          <Badge className="text-lg px-4 py-2 bg-gradient-warm text-white border-4 border-purple-300 animate-wiggle shadow-electric">
+          <Badge className="text-xl px-6 py-3 bg-gradient-warm text-white border-4 border-purple-300 animate-wiggle shadow-electric font-bold">
             🎯 רמה: {level}/3
           </Badge>
           
-          <Badge className="text-lg px-4 py-2 bg-gradient-magical text-white border-4 border-cyan-300 animate-pulse shadow-glow">
+          <Badge className="text-xl px-6 py-3 bg-gradient-magical text-white border-4 border-cyan-300 animate-pulse shadow-glow font-bold">
             🎮 ניסיונות: {attempts}
           </Badge>
           
@@ -536,7 +543,7 @@ export const TorahGameBoard = () => {
             variant="ghost"
             size="sm"
             onClick={toggleAudio}
-            className={`text-lg px-4 py-2 border-4 font-bold transition-all duration-300 ${
+            className={`text-xl px-6 py-3 border-4 font-bold transition-all duration-300 ${
               isEnabled 
                 ? 'bg-gradient-success text-white border-green-300 animate-pulse-rainbow shadow-success' 
                 : 'bg-gradient-electric text-white border-red-300 animate-wiggle shadow-electric'
@@ -550,11 +557,11 @@ export const TorahGameBoard = () => {
       {/* Timer Bar */}
       {isTimerActive && (
         <div className="mb-6">
-          <TimerBar 
-            isActive={isTimerActive} 
-            onTimeUp={() => setIsTimerActive(false)}
-            duration={4000} 
-          />
+        <TimerBar 
+          isActive={isTimerActive} 
+          onTimeUp={() => setIsTimerActive(false)}
+          duration={6000} 
+        />
         </div>
       )}
 
