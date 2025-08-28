@@ -62,6 +62,8 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'torah-gold': 'hsl(var(--torah-gold))',
+				'torah-navy': 'hsl(var(--torah-navy))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

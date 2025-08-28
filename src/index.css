@@ -35,15 +35,31 @@
     --torah-navy: 220 30% 5%;
     --torah-silver: 210 20% 85%;
     
+    /* Game colors */
+    --success: 142 76% 36%;
+    --success-foreground: 60 100% 98%;
+    --success-glow: 142 76% 56%;
+    --warning: 35 91% 65%;
+    --warning-foreground: 220 30% 5%;
+    
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--torah-gold)), hsl(var(--primary-glow)));
     --gradient-background: linear-gradient(180deg, hsl(var(--background)), hsl(220 25% 8%));
     --gradient-card: linear-gradient(145deg, hsl(220 25% 8%), hsl(220 20% 10%));
+    --gradient-bg: linear-gradient(135deg, hsl(var(--background)), hsl(220 25% 8%));
+    --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-glow)));
+    --gradient-electric: linear-gradient(135deg, hsl(240 100% 50%), hsl(300 100% 60%));
+    --gradient-rainbow: linear-gradient(135deg, hsl(0 100% 60%), hsl(60 100% 60%), hsl(120 100% 60%), hsl(180 100% 60%), hsl(240 100% 60%), hsl(300 100% 60%));
+    --gradient-warm: linear-gradient(135deg, hsl(25 95% 53%), hsl(45 95% 58%));
+    --gradient-magical: linear-gradient(135deg, hsl(270 75% 60%), hsl(300 85% 65%));
     
     /* Shadows */
     --shadow-torah: 0 10px 30px -10px hsl(var(--torah-gold) / 0.3);
     --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
     --shadow-card: 0 8px 25px -8px hsl(220 30% 5% / 0.3);
+    --shadow-rainbow: 0 0 30px hsl(300 100% 60% / 0.5);
+    --shadow-electric: 0 0 30px hsl(240 100% 60% / 0.5);
+    --shadow-success: 0 0 30px hsl(var(--success) / 0.5);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -9,6 +9,7 @@ import { torahMatches, torahCategories, torahCategoryNames, TorahCategoryKey } f
 import { Sparkles, RotateCcw, Trophy, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useGameAudio } from '@/hooks/useGameAudio';
+import { Link } from 'react-router-dom';
 
 interface Selections {
   [key: string]: string | null;
@@ -373,7 +374,17 @@ export const Torah = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-torah-gold/20 via-background to-torah-gold/10 p-4" dir="rtl">
+    <div className="relative">
+      {/* Navigation to English App */}
+      <div className="fixed top-4 left-4 z-50">
+        <Link to="/">
+          <Button variant="outline" className="bg-background/80 backdrop-blur-sm" dir="ltr">
+            🌍 English Quiz App
+          </Button>
+        </Link>
+      </div>
+      
+      <div className="min-h-screen bg-gradient-to-br from-torah-gold/20 via-background to-torah-gold/10 p-4" dir="rtl">
       {/* Voice Prompt for iOS */}
       {showVoicePrompt && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -484,6 +495,7 @@ export const Torah = () => {
           משחק חדש
         </Button>
       </div>
+    </div>
     </div>
   );
 };
