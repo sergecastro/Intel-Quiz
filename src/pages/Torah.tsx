@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TorahGameBoard } from '@/components/TorahGameBoard';
-import { HolidaysSlotMachine } from '@/components/HolidaysSlotMachine';
+import { HolidaysGameBoard } from '@/components/HolidaysGameBoard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -36,7 +36,7 @@ const Torah = () => {
             עברית
           </Button>
         </div>
-        <HolidaysSlotMachine language={language} />
+        <HolidaysGameBoard />
       </div>
     );
   }
